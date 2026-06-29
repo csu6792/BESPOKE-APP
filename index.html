@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BESPOKE - 韓式美學智慧燈箱控制系統</title>
+    <!-- 引入高質感 Google 字型 -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 韓系暖奶油白設計語彙 */
+            --bg-canvas: #FAF9F5;
+            --bg-card: #FFFFFF;
+            --border-color: #EAE8E0;
+            --text-primary: #1F1E1C;
+            --text-secondary: #8E8A82;
+            
+            /* 奢華點綴色 */
+            --accent-gold: #C5A880;
+            --accent-gold-hover: #B3966F;
+            --accent-eco: #8FA993; /* 節能特調低飽和鼠尾草綠 */
+            
+            /* 狀態色 */
+            --color-success: #7EA082;
+            --color-danger: #D98880;
+            --color-warning: #E8C17F;
+            
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body { 
+            margin: 0; padding: 0; 
+            background: var(--bg-canvas); 
+            font-family: 'Montserrat', 'Noto Sans TC', sans-serif;
+            color: var(--text-primary); 
+            user-select: none; -webkit-user-select: none;
+            overflow-x: hidden;
+            letter-spacing: 0.03em;
+        }
+
+        /* 頂部導覽列 */
+        .header { 
+            background: rgba(250, 249, 245, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px 32px; 
+            position: sticky; top: 0; z-index: 100; 
+            border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .header-logo {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-logo .brand {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+
+        .header-logo .sub-brand {
+            font-size: 0.65rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            letter-spacing: 0.1em;
+            margin-top: 2px;
+        }
+
+        /* 主容器 */
+        .container { 
+            padding: 24px; 
+            max-width: 900px; 
+            margin: auto; 
+            display: grid; 
+            grid-template-columns: 1fr;
+            gap: 24px; 
+            box-sizing: border-box;
+        }
+
+        /* 卡片設計 */
+        .card { 
+            background: var(--bg-card); 
+            border-radius: 24px; 
+            padding: 28px; 
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 35px rgba(31, 30, 28, 0.02);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            box-shadow: 0 15px 45px rgba(197, 168, 128, 0.06);
+            border-color: #DFDCD3;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .card-title { 
+            font-size: 1.05rem; 
+            color: var(--text-primary); 
+            margin: 0;
+            font-weight: 600; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            letter-spacing: 0.05em;
+        }
+
+        .card-title-eng {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 2px;
+        }
+
+        /* 擬真燈箱預覽組件 */
+        .lightbox-simulator {
+            background: #111110;
+            border-radius: 20px;
+            padding: 40px 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.15);
+            margin-bottom: 8px;
+        }
+
+        /* 虛擬 8 顆 LED */
+        .led-strip-preview {
+            display: flex;
+            justify-content: space-between;
+            width: 85%;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .led-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2D2C2A;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        /* 壓克力發光燈箱招牌本體 */
+        .acrylic-sign {
+            width: 85%;
+            max-width: 320px;
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 18px 24px;
+            text-align: center;
+            border: 4px solid #DFDCD3;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transition: var(--transition-smooth);
+            z-index: 2;
+        }
+
+        .acrylic-sign h4 {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 300;
+            letter-spacing: 0.25em;
+            color: #1A1A1A;
+            text-transform: uppercase;
+        }
+
+        .acrylic-sign p {
+            margin: 4px 0 0;
+            font-size: 0.65rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* 按鈕與互動元件 */
+        .btn { 
+            border: none; 
+            border-radius: 14px; 
+            padding: 14px 20px; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: var(--transition-smooth); 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        
+        .btn-primary { 
+            background: var(--text-primary); 
+            color: #FAF9F5; 
+        }
+        .btn-primary:hover { 
+            background: #363430;
+        }
+        
+        .btn-outline { 
+            background: transparent; 
+            color: var(--text-primary); 
+            border: 1px solid var(--border-color); 
+        }
+        .btn-outline:hover {
+            background: #F4F2EB;
+            border-color: #D3CEBF;
+        }
+
+        /* ECO 節能模式按鈕 */
+        .btn-eco {
+            background: #F0F4F1;
+            color: var(--accent-eco);
+            border: 1px solid #E1E8E3;
+            width: 100%;
+        }
+        .btn-eco.active {
+            background: var(--accent-eco);
+            color: #FFFFFF;
+            border-color: var(--accent-eco);
+            box-shadow: 0 4px 15px rgba(143, 169, 147, 0.3);
+        }
+
+        /* 經典韓系網格特效選擇器 */
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .effects-grid { grid-template-columns: 1fr; }
+        }
+
+        .effect-card {
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .effect-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+            background: #FFFDFC;
+        }
+
+        .effect-card.active {
+            background: #FAF6F0;
+            border-color: var(--accent-gold);
+            box-shadow: 0 4px 15px rgba(197, 168, 128, 0.12);
+        }
+
+        .effect-icon { margin-bottom: 4px; }
+        .effect-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+        .effect-desc { font-size: 0.7rem; color: var(--text-secondary); line-height: 1.3; }
+
+        /* 質感滑桿 Slider */
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .slider-label-group { display: flex; justify-content: space-between; align-items: center; }
+        .slider-label { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;}
+        .slider-value { font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--accent-gold); }
+
+        .custom-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border-color);
+            outline: none;
+        }
+        .custom-range::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: var(--text-primary); border: 2px solid #FFFFFF;
+            cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: transform 0.1s;
+        }
+        .custom-range::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        .custom-range:disabled::-webkit-slider-thumb { background: #D3CEBF; cursor: not-allowed; }
+        .custom-range:disabled { background: #F4F2EB; }
+
+        /* 色彩選擇與快速預設 */
+        .color-control-wrapper { display: flex; gap: 16px; align-items: center; margin-top: 12px; }
+        .color-picker-round {
+            position: relative; width: 52px; height: 52px; border-radius: 50%;
+            overflow: hidden; border: 2px solid #FFFFFF; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer; flex-shrink: 0;
+        }
+        input[type="color"] {
+            position: absolute; top: -10px; left: -10px; width: 80px; height: 80px;
+            border: none; padding: 0; cursor: pointer; background: none;
+        }
+        .preset-colors { display: flex; gap: 10px; flex-wrap: wrap; flex-grow: 1; }
+        .preset-dot {
+            width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+            border: 2px solid transparent; transition: var(--transition-smooth); position: relative;
+        }
+        .preset-dot:hover { transform: scale(1.1); }
+        .preset-dot.active { border-color: var(--text-primary); transform: scale(1.05); }
+
+        /* 狀態標籤 */
+        .status-pill { 
+            padding: 6px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 600;
+            background: #EAE8E0; color: var(--text-secondary); transition: var(--transition-smooth);
+            display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.05em;
+        }
+        .status-pill::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary); }
+        .status-success { background: #E9F4EC; color: var(--color-success); }
+        .status-success::before { background: var(--color-success); }
+        .status-warning { background: #FFF9ED; color: var(--color-warning); }
+        .status-warning::before { background: var(--color-warning); }
+        .status-danger { background: #FDF1F0; color: var(--color-danger); }
+        .status-danger::before { background: var(--color-danger); }
+
+        /* 通知 Toast */
+        .toast-container {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(31, 30, 28, 0.95); color: #FAF9F5; padding: 12px 28px;
+            border-radius: 50px; font-size: 0.8rem; font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
+            z-index: 1000; opacity: 0; pointer-events: none; display: flex; align-items: center; gap: 8px;
+        }
+        .toast-container.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-logo">
+            <span class="brand">Bespoke</span>
+            <span class="sub-brand">PRO LIGHTBOX SYSTEM</span>
+        </div>
+        <span id="status" class="status-pill">STANDBY</span>
+    </div>
+
+    <div class="container">
+        
+        <!-- Lightbox 虛擬預覽與連線管理 -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">燈箱視覺狀態模擬</h3>
+                    <div class="card-title-eng">Visualizer & Core Connect</div>
+                </div>
+            </div>
+            
+            <div class="lightbox-simulator">
+                <div class="led-strip-preview" id="ledStrip">
+                    <div class="led-dot" id="led-0"></div>
+                    <div class="led-dot" id="led-1"></div>
+                    <div class="led-dot" id="led-2"></div>
+                    <div class="led-dot" id="led-3"></div>
+                    <div class="led-dot" id="led-4"></div>
+                    <div class="led-dot" id="led-5"></div>
+                    <div class="led-dot" id="led-6"></div>
+                    <div class="led-dot" id="led-7"></div>
+                </div>
+                
+                <div class="acrylic-sign" id="acrylicSign">
+                    <h4>coe</h4>
+                    <p>6792@gcloud.csu.edu.tw</p>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-top: 15px;">
+                <button class="btn btn-primary" onclick="vibrate(); typeof connect === 'function' ? connect() : showToast('模擬環境：已嘗試連線')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <span>連接美學燈箱</span>
+                </button>
+                <button class="btn btn-outline" onclick="vibrate(); typeof disconnect === 'function' ? disconnect() : showToast('模擬環境：已中斷連線')">中斷連線</button>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary); border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 15px; display: flex; justify-content: space-between;">
+                <span>設備廣播：<span id="info" style="font-family: monospace; font-weight: 600; color: var(--text-primary);">--</span></span>
+                <span>系統頻道：CH-08</span>
+            </div>
+        </div>
+
+        <!-- 商業調光控制、ECO 與 定時模式 -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">色彩及情境規劃</h3>
+                    <div class="card-title-eng">Color, ECO & Timer</div>
+                </div>
+            </div>
+
+            <!-- 無級亮度調節 -->
+            <div class="slider-container">
+                <div class="slider-label-group">
+                    <span class="slider-label">商用發光亮度調節</span>
+                    <span class="slider-value" id="brightnessVal">85%</span>
+                </div>
+                <input type="range" id="brightnessInput" class="custom-range" min="0" max="100" value="85" oninput="updateBrightness(this.value)" onchange="vibrateLight()">
+            </div>
+
+            <!-- ECO 智能節能模式 -->
+            <div style="margin-top: 20px;">
+                <button id="ecoBtn" class="btn btn-eco" onclick="toggleEcoMode()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                    <span>ECO 智能營業節能 (鎖定亮度30%)</span>
+                </button>
+            </div>
+
+            <!-- 營業定時關閉 (Sleep Timer) -->
+            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+                <div class="slider-label-group" style="margin-bottom: 12px;">
+                    <span class="slider-label">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        營業定時關閉 (Sleep Timer)
+                    </span>
+                    <span class="slider-value" id="timerStatus" style="font-size: 0.75rem; color: var(--text-secondary);">未設定</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                    <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem;" onclick="setTimer(15)">15分</button>
+                    <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem;" onclick="setTimer(30)">30分</button>
+                    <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem;" onclick="setTimer(60)">60分</button>
+                    <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem; border-color: #FDF1F0; color: var(--color-danger); background: #FDF1F0;" onclick="setTimer(0)">取消</button>
+                </div>
+            </div>
+
+            <div style="height: 1px; background: var(--border-color); margin: 24px 0 20px;"></div>
+
+            <!-- 靜態調色盤 -->
+            <div class="slider-label" style="margin-bottom: 8px;">靜態商用專屬色系</div>
+            <div class="color-control-wrapper">
+                <div class="color-picker-round">
+                    <input type="color" id="rgbInput" value="#FFEAD2" onchange="vibrate(); applyCustomColor(this.value)">
+                </div>
+                <div class="preset-colors">
+                    <div class="preset-dot active" style="background: #FFEAD2;" title="首爾落日暖橘" onclick="applyPreset('#FFEAD2', this)"></div>
+                    <div class="preset-dot" style="background: #FFFDFC;" title="極簡石膏冷白" onclick="applyPreset('#FFFDFC', this)"></div>
+                    <div class="preset-dot" style="background: #EBE1D7;" title="高雅燕麥杏白" onclick="applyPreset('#EBE1D7', this)"></div>
+                    <div class="preset-dot" style="background: #FFD3B6;" title="江南霓虹暖粉" onclick="applyPreset('#FFD3B6', this)"></div>
+                    <div class="preset-dot" style="background: #A8E6CF;" title="濟州薄荷清綠" onclick="applyPreset('#A8E6CF', this)"></div>
+                    <div class="preset-dot" style="background: #DCE5E7;" title="漢江清晨天藍" onclick="applyPreset('#DCE5E7', this)"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商用動態特效控制 & 動態律動速度 -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">商業行銷動態特效</h3>
+                    <div class="card-title-eng">Dynamic Effects & Rhythm</div>
+                </div>
+            </div>
+
+            <div class="effects-grid">
+                <div class="effect-card" id="effect-fire" onclick="activateEffect('fire')">
+                    <span class="effect-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                    </span>
+                    <span class="effect-name">曜暖火焰</span>
+                    <span class="effect-desc">優雅微爍黃光，營造高奢暖氛圍</span>
+                </div>
+                <div class="effect-card" id="effect-rainbow" onclick="activateEffect('rainbow')">
+                    <span class="effect-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17a10 10 0 0 0-20 0"/><path d="M18 17a6 6 0 0 0-12 0"/><path d="M14 17a2 2 0 0 0-4 0"/></svg>
+                    </span>
+                    <span class="effect-name">極光絢彩</span>
+                    <span class="effect-desc">韓系莫蘭迪粉彩慢速漸變</span>
+                </div>
+                <div class="effect-card" id="effect-flow" onclick="activateEffect('flow')">
+                    <span class="effect-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1S7 6.5 8 6s1.2-1 2.5-1S13 5.5 14 6s1.2 1 2.5 1S19 6.5 20 6s1.2-1 2.5-1S24 5.5 24 6"/><path d="M2 12c.6.5 1.2 1 2.5 1S7 12.5 8 12s1.2-1 2.5-1S13 11.5 14 12s1.2-1 2.5-1S19 12.5 20 12s1.2-1 2.5-1S24 11.5 24 12"/><path d="M2 18c.6.5 1.2 1 2.5 1S7 18.5 8 18s1.2-1 2.5-1S13 17.5 14 18s1.2-1 2.5-1S19 18.5 20 18s1.2-1 2.5-1S24 17.5 24 18"/></svg>
+                    </span>
+                    <span class="effect-name">水光流螢</span>
+                    <span class="effect-desc">光點柔和律動流水Chasing</span>
+                </div>
+            </div>
+
+            <!-- 動態律動節奏滑桿 -->
+            <div class="slider-container" style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+                <div class="slider-label-group">
+                    <span class="slider-label">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        動態光效律動節奏
+                    </span>
+                    <span class="slider-value" id="speedVal">標準 1.0x</span>
+                </div>
+                <input type="range" id="speedInput" class="custom-range" min="50" max="150" value="100" oninput="updateSpeed(this.value)" onchange="vibrateLight()">
+                <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-secondary); margin-top: 4px;">
+                    <span>舒緩漸變</span>
+                    <span>活潑動感</span>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr; margin-top: 20px;">
+                <button class="btn btn-outline" style="width: 100%;" onclick="vibrate(); stopEffects()">
+                    停止動態特效 (切回靜態光)
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 底部微烤吐司通知 -->
+    <div class="toast-container" id="toast">
+        <span id="toastMsg">系統就緒</span>
+    </div>
+
+    <!-- 引入您原有的藍牙/WebSocket 邏輯 -->
+    <script src="app.js"></script>
+    
+    <script>
+        // --- UI Haptic Feedback (觸覺震動回饋) ---
+        function vibrate() {
+            if (navigator.vibrate) navigator.vibrate(15);
+        }
+        function vibrateLight() {
+            if (navigator.vibrate) navigator.vibrate([5]);
+        }
+
+        // --- 狀態監聽 ---
+        const statusEl = document.getElementById("status");
+        if(statusEl) {
+            const observer = new MutationObserver(function() {
+                const txt = statusEl.innerText;
+                statusEl.className = "status-pill"; 
+                if (txt.includes("已就緒") || txt.includes("已連線")) {
+                    statusEl.classList.add("status-success");
+                    statusEl.innerText = "CONNECTED";
+                    showToast("已與品牌燈箱建立高速連結");
+                } else if (txt.includes("搜尋") || txt.includes("連線中")) {
+                    statusEl.classList.add("status-warning");
+                    statusEl.innerText = "SCANNING";
+                } else if (txt.includes("錯誤") || txt.includes("斷線") || txt.includes("未連線")) {
+                    statusEl.classList.add("status-danger");
+                    statusEl.innerText = "OFFLINE";
+                }
+            });
+            observer.observe(statusEl, { childList: true, characterData: true, subtree: true });
+        }
+
+        // --- 核心變數 ---
+        let currentMode = 'static'; 
+        let currentHex = '#FFEAD2';
+        let brightness = 85;
+        let savedBrightness = 85; 
+        let isEcoMode = false;
+        let effectSpeedMulti = 1.0; 
+        let animationTimer = null;
+        
+        // 計時器變數
+        let shutdownTimeout = null;
+        let countdownInterval = null;
+        
+        // 特效進度參數
+        let flowIndex = 0;
+        let rainbowHue = 0;
+
+        // --- 模擬器控制與動畫邏輯 ---
+        function updateLedSimulator() {
+            if (animationTimer) {
+                clearInterval(animationTimer);
+                animationTimer = null;
+            }
+
+            const leds = document.querySelectorAll('.led-dot');
+            const acrylic = document.getElementById('acrylicSign');
+            const actualBrightness = brightness / 100;
+
+            if (currentMode === 'static') {
+                const glowColor = hexToRgba(currentHex, actualBrightness);
+                leds.forEach(led => {
+                    led.style.background = currentHex;
+                    led.style.boxShadow = `0 0 15px ${glowColor}, 0 0 5px ${glowColor}`;
+                });
+                acrylic.style.boxShadow = `0 0 35px ${hexToRgba(currentHex, actualBrightness * 0.45)}`;
+            } 
+            else if (currentMode === 'fire') {
+                const baseInterval = 120;
+                animationTimer = setInterval(() => {
+                    leds.forEach(led => {
+                        const r = Math.floor(Math.random() * 40) + 215; 
+                        const g = Math.floor(Math.random() * 50) + 120; 
+                        const b = Math.floor(Math.random() * 20) + 30;  
+                        const hex = rgbToHex(r, g, b);
+                        const flickerBrightness = actualBrightness * (Math.random() * 0.4 + 0.6);
+                        const glowColor = hexToRgba(hex, flickerBrightness);
+                        led.style.background = hex;
+                        led.style.boxShadow = `0 0 18px ${glowColor}, 0 0 6px ${glowColor}`;
+                    });
+                    const mainGlow = hexToRgba('#FFA500', actualBrightness * 0.35);
+                    acrylic.style.boxShadow = `0 0 35px ${mainGlow}`;
+                }, baseInterval / effectSpeedMulti);
+            } 
+            else if (currentMode === 'rainbow') {
+                const baseInterval = 40;
+                animationTimer = setInterval(() => {
+                    rainbowHue = (rainbowHue + 1) % 360;
+                    leds.forEach((led, idx) => {
+                        const h = (rainbowHue + (idx * 25)) % 360;
+                        const color = `hsl(${h}, 80%, ${actualBrightness * 75}%)`; 
+                        led.style.background = color;
+                        led.style.boxShadow = `0 0 16px ${color}`;
+                    });
+                    acrylic.style.boxShadow = `0 0 35px hsl(${rainbowHue}, 80%, ${actualBrightness * 75}%)`;
+                }, baseInterval / effectSpeedMulti);
+            } 
+            else if (currentMode === 'flow') {
+                const baseInterval = 150;
+                animationTimer = setInterval(() => {
+                    flowIndex = (flowIndex + 1) % 8;
+                    leds.forEach((led, idx) => {
+                        if (idx === flowIndex || idx === (flowIndex + 1) % 8) {
+                            const color = '#A0E4F1';
+                            const glow = hexToRgba(color, actualBrightness);
+                            led.style.background = color;
+                            led.style.boxShadow = `0 0 18px ${glow}, 0 0 6px ${glow}`;
+                        } else {
+                            const color = '#3A3935';
+                            led.style.background = color;
+                            led.style.boxShadow = 'none';
+                        }
+                    });
+                    acrylic.style.boxShadow = `0 0 25px ${hexToRgba('#A0E4F1', actualBrightness * 0.2)}`;
+                }, baseInterval / effectSpeedMulti); 
+            }
+        }
+
+        // --- ECO 智能節能模式 ---
+        function toggleEcoMode() {
+            vibrate();
+            isEcoMode = !isEcoMode;
+            const ecoBtn = document.getElementById("ecoBtn");
+            const brightInput = document.getElementById("brightnessInput");
+            
+            if (isEcoMode) {
+                savedBrightness = brightness;
+                updateBrightness(30);
+                brightInput.disabled = true;
+                ecoBtn.classList.add("active");
+                ecoBtn.querySelector("span").innerText = "ECO 營業節能運作中 (鎖定30%)";
+                
+                if (typeof sendCmd === 'function') sendCmd('ECO_ON');
+                showToast("已啟動 ECO 節能模式");
+            } else {
+                brightInput.disabled = false;
+                updateBrightness(savedBrightness);
+                brightInput.value = savedBrightness;
+                ecoBtn.classList.remove("active");
+                ecoBtn.querySelector("span").innerText = "ECO 智能營業節能 (鎖定亮度30%)";
+                
+                if (typeof sendCmd === 'function') sendCmd('ECO_OFF');
+                showToast("ECO 已解除");
+            }
+        }
+
+        // --- 營業定時關閉 (Timer) 邏輯 ---
+        function setTimer(minutes) {
+            vibrate();
+            // 先清除舊的計時器
+            if (shutdownTimeout) clearTimeout(shutdownTimeout);
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            const statusEl = document.getElementById('timerStatus');
+
+            if (minutes === 0) {
+                statusEl.innerText = '未設定';
+                statusEl.style.color = 'var(--text-secondary)';
+                if (typeof sendCmd === 'function') sendCmd('TIMER_CANCEL');
+                showToast('已取消定時關閉');
+                return;
+            }
+
+            let remainingSeconds = minutes * 60;
+            
+            // 更新 UI 倒數顯示
+            const updateText = () => {
+                const m = Math.floor(remainingSeconds / 60);
+                const s = remainingSeconds % 60;
+                statusEl.innerText = `剩餘 ${m}分 ${s.toString().padStart(2, '0')}秒`;
+                statusEl.style.color = 'var(--accent-gold)';
+            };
+            
+            updateText();
+            countdownInterval = setInterval(() => {
+                remainingSeconds--;
+                if (remainingSeconds <= 0) {
+                    clearInterval(countdownInterval);
+                    executeShutdown();
+                } else {
+                    updateText();
+                }
+            }, 1000);
+
+            // 若使用者停留在畫面上，時間到就執行。
+            shutdownTimeout = setTimeout(() => {
+                // 防呆，已交由 setInterval 觸發
+            }, minutes * 60 * 1000);
+
+            // 也將定時信號送給硬體，若網頁關閉硬體仍可獨立倒數
+            if (typeof sendCmd === 'function') sendCmd(`TIMER_${minutes}`);
+            showToast(`已設定 ${minutes} 分鐘後自動休眠`);
+        }
+
+        // --- 執行關閉 ---
+        function executeShutdown() {
+            const statusEl = document.getElementById('timerStatus');
+            statusEl.innerText = '已休眠';
+            statusEl.style.color = 'var(--color-danger)';
+            
+            // 如果開著 ECO，先解除
+            if (isEcoMode) toggleEcoMode();
+            
+            // 亮度歸零（視覺關閉）
+            document.getElementById("brightnessInput").value = 0;
+            updateBrightness(0);
+            
+            // 停止所有動態特效
+            stopEffects();
+
+            // 送出關機指令與亮度 0 給硬體端
+            if (typeof sendCmd === 'function') {
+                sendCmd('POWER_OFF');
+                sendCmd('BRIGHT_0');
+            }
+            showToast('營業定時結束，燈箱已進入休眠');
+            vibrate();
+        }
+
+        // --- 調光器控制 ---
+        function updateBrightness(val) {
+            brightness = val;
+            document.getElementById("brightnessVal").innerText = val + "%";
+            updateLedSimulator();
+            
+            if (typeof sendCmd === 'function') {
+                sendCmd(`BRIGHT_${val}`);
+            }
+        }
+
+        // --- 動態律動速度控制 ---
+        function updateSpeed(val) {
+            effectSpeedMulti = (val / 100).toFixed(1);
+            document.getElementById("speedVal").innerText = (effectSpeedMulti == 1.0 ? "標準" : effectSpeedMulti < 1.0 ? "舒緩" : "動感") + " " + effectSpeedMulti + "x";
+            
+            updateLedSimulator();
+            
+            if (typeof sendCmd === 'function') {
+                sendCmd(`SPEED_${val}`);
+            }
+        }
+
+        // --- 色彩切換 ---
+        function applyPreset(hex, element) {
+            vibrate();
+            document.querySelectorAll('.preset-dot').forEach(dot => dot.classList.remove('active'));
+            if(element) element.classList.add('active');
+            
+            document.getElementById("rgbInput").value = hex;
+            currentHex = hex;
+            currentMode = 'static';
+            
+            document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
+            updateLedSimulator();
+            
+            if(typeof sendRGB === 'function') sendRGB();
+            showToast(`已套用：${element ? element.title : '品牌原創色'}`);
+        }
+
+        function applyCustomColor(hex) {
+            document.querySelectorAll('.preset-dot').forEach(dot => dot.classList.remove('active'));
+            currentHex = hex;
+            currentMode = 'static';
+            document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
+            updateLedSimulator();
+            
+            if(typeof sendRGB === 'function') sendRGB();
+            showToast("已變更客製化色系");
+        }
+
+        // --- 特效切換 ---
+        function activateEffect(effectName) {
+            vibrate();
+            document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
+            const activeCard = document.getElementById(`effect-${effectName}`);
+            if (activeCard) activeCard.classList.add('active');
+
+            currentMode = effectName;
+            updateLedSimulator();
+
+            if (typeof sendCmd === 'function') {
+                if (effectName === 'fire') {
+                    sendCmd('MODE_FIRE');
+                    showToast("已啟動曜暖火焰動態模式");
+                } else if (effectName === 'rainbow') {
+                    sendCmd('MODE_RAINBOW');
+                    showToast("已啟動極光絢彩商用動態模式");
+                } else if (effectName === 'flow') {
+                    sendCmd('MODE_FLOW');
+                    showToast("已啟動水光流螢漸變模式");
+                }
+            } else {
+                showToast(`動態模式變更為: ${effectName}`);
+            }
+        }
+
+        function stopEffects() {
+            document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
+            currentMode = 'static';
+            updateLedSimulator();
+            
+            if (typeof sendCmd === 'function') sendCmd('MODE_STATIC');
+            if(typeof sendRGB === 'function') sendRGB();
+            showToast("已切回品牌靜態恆亮光效");
+        }
+
+        // --- 輔助函式 ---
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            document.getElementById("toastMsg").innerText = message;
+            toast.classList.add("show");
+            setTimeout(() => { toast.classList.remove("show"); }, 3000);
+        }
+
+        window.onload = function() {
+            updateLedSimulator();
+            showToast("Bespoke 智慧物聯網控制系統已啟動");
+        }
+    </script>
+</body>
+</html>
