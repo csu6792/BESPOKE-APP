@@ -20,7 +20,7 @@ async function connect() {
         
         // 請求藍牙裝置 (請確認 ESP32 廣播名稱是否為此名稱)
         bleDevice = await navigator.bluetooth.requestDevice({
-            filters: [{ name: "Interactive_Device" }],
+            filters: [{ name: "BESPOKE_Lightbox" }],
             optionalServices: [SERVICE]
         });
 
