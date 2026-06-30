@@ -508,6 +508,20 @@
                     <span class="effect-name">靜謐呼吸</span>
                     <span class="effect-desc">隨品牌主色系平滑漸明漸暗</span>
                 </div>
+                <div class="effect-card" id="effect-star" onclick="activateEffect('star')">
+                    <span class="effect-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </span>
+                    <span class="effect-name">晨星微爍</span>
+                    <span class="effect-desc">鑽石般隨機高光微閃</span>
+                </div>
+                <div class="effect-card" id="effect-meteor" onclick="activateEffect('meteor')">
+                    <span class="effect-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L3 21"/><path d="M21 3L14 3"/><path d="M21 3L21 10"/></svg>
+                    </span>
+                    <span class="effect-name">香檳流星</span>
+                    <span class="effect-desc">吸睛拖尾彗星動態劃過</span>
+                </div>
             </div>
 
             <!-- 動態律動節奏滑桿 -->
@@ -851,6 +865,14 @@
                 else if (effectName === 'breath') {
                     sendCmd('MODE_BREATH');
                     showToast("已啟動靜謐呼吸模式");
+                }
+                else if (effectName === 'star') {
+                    sendCmd('MODE_STAR');
+                    showToast("已啟動晨星微爍模式");
+                }
+                else if (effectName === 'meteor') {
+                    sendCmd('MODE_METEOR');
+                    showToast("已啟動香檳流星模式");
                 }
             } else {
                 showToast(`動態模式變更為: ${effectName}`);
