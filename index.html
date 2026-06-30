@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BESPOKE - 燈箱控制系統</title>
-    <!-- 引入高質感 Google 字型 -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -28,6 +27,18 @@
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* --- 沉浸式進場動畫定義 --- */
+        @keyframes slideUpFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         body { 
             margin: 0; padding: 0; 
             background: var(--bg-canvas); 
@@ -38,7 +49,7 @@
             letter-spacing: 0.03em;
         }
 
-        /* 頂部導覽列 */
+        /* 頂部導覽列 (加入進場動畫) */
         .header { 
             background: rgba(250, 249, 245, 0.85);
             backdrop-filter: blur(20px);
@@ -47,6 +58,8 @@
             position: sticky; top: 0; z-index: 100; 
             border-bottom: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center;
+            opacity: 0;
+            animation: slideUpFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .header-logo {
@@ -81,16 +94,18 @@
             box-sizing: border-box;
         }
 
-        /* 卡片設計 */
+        /* 卡片設計 (加入進場動畫與微弱時差) */
         .card { 
             background: var(--bg-card); 
             border-radius: 24px; 
-            padding: 28px; 
+            padding: 32px; 
             border: 1px solid var(--border-color);
             box-shadow: 0 10px 35px rgba(31, 30, 28, 0.02);
             transition: var(--transition-smooth);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            animation: slideUpFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         
         .card:hover {
@@ -98,18 +113,23 @@
             border-color: #DFDCD3;
         }
 
+        /* 卡片階層延遲出現，創造高級儀式感 */
+        .container .card:nth-child(1) { animation-delay: 0.1s; }
+        .container .card:nth-child(2) { animation-delay: 0.2s; }
+        .container .card:nth-child(3) { animation-delay: 0.3s; }
+
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
         
         .card-title { 
-            font-size: 1.05rem; 
+            font-size: 1.1rem; 
             color: var(--text-primary); 
             margin: 0;
-            font-weight: 600; 
+            font-weight: 700; 
             display: flex; 
             align-items: center; 
             gap: 10px;
@@ -117,12 +137,12 @@
         }
 
         .card-title-eng {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             color: var(--text-secondary);
             font-weight: 400;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-top: 2px;
+            letter-spacing: 0.15em; 
+            margin-top: 4px;
         }
 
         /* 擬真燈箱預覽組件 */
@@ -161,7 +181,8 @@
         .acrylic-sign {
             width: 85%;
             max-width: 320px;
-            background: #FFFFFF;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
             border-radius: 12px;
             padding: 18px 24px;
             text-align: center;
@@ -280,36 +301,46 @@
         .effect-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
         .effect-desc { font-size: 0.7rem; color: var(--text-secondary); line-height: 1.3; }
 
-        /* 質感滑桿 Slider */
+        /* 質感滑桿 Slider 優化 (粗軌道設計) */
         .slider-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-top: 15px;
+            gap: 16px;
+            margin-top: 18px;
         }
 
         .slider-label-group { display: flex; justify-content: space-between; align-items: center; }
         .slider-label { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;}
         .slider-value { font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--accent-gold); }
 
+        /* 質感滑桿 Slider (終極完美無縫版) */
         .custom-range {
             -webkit-appearance: none;
             width: 100%;
-            height: 4px;
-            border-radius: 2px;
-            background: var(--border-color);
+            height: 24px; 
+            border-radius: 12px;
+            background: var(--border-color); 
             outline: none;
+            overflow: hidden; /* 切除多餘溢出，保持膠囊狀 */
+            cursor: pointer;
         }
+        
         .custom-range::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
-            width: 20px; height: 20px; border-radius: 50%;
-            background: var(--text-primary); border: 2px solid #FFFFFF;
-            cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            transition: transform 0.1s;
+            width: 24px; height: 24px; border-radius: 50%;
+            background: #FFFFFF; 
+            /* 魔法數學修正：擴散 4000px，並往左偏移 4012px，剛好將直線藏在圓心 (12px) 處完美隱藏！ */
+            box-shadow: -4012px 0 0 4000px var(--accent-gold), inset 0 2px 4px rgba(0,0,0,0.1); 
+            transition: background 0.1s;
         }
-        .custom-range::-webkit-slider-thumb:hover { transform: scale(1.15); }
-        .custom-range:disabled::-webkit-slider-thumb { background: #D3CEBF; cursor: not-allowed; }
-        .custom-range:disabled { background: #F4F2EB; }
+        
+        .custom-range::-webkit-slider-thumb:active { 
+            background: #F4F2EB; 
+        }
+        
+        .custom-range:disabled { 
+            opacity: 0.5; cursor: not-allowed; 
+        }
 
         /* 色彩選擇與快速預設 */
         .color-control-wrapper { display: flex; gap: 16px; align-items: center; margin-top: 12px; }
@@ -322,13 +353,18 @@
             position: absolute; top: -10px; left: -10px; width: 80px; height: 80px;
             border: none; padding: 0; cursor: pointer; background: none;
         }
-        .preset-colors { display: flex; gap: 10px; flex-wrap: wrap; flex-grow: 1; }
+        .preset-colors { display: flex; gap: 12px; flex-wrap: wrap; flex-grow: 1; }
+        
+        /* 雙層光環選色優化 */
         .preset-dot {
-            width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
-            border: 2px solid transparent; transition: var(--transition-smooth); position: relative;
+            width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+            transition: var(--transition-smooth); position: relative;
         }
         .preset-dot:hover { transform: scale(1.1); }
-        .preset-dot.active { border-color: var(--text-primary); transform: scale(1.05); }
+        .preset-dot.active { 
+            box-shadow: 0 0 0 3px var(--bg-card), 0 0 0 5px var(--dot-color);
+            transform: scale(1.05); 
+        }
 
         /* 狀態標籤 */
         .status-pill { 
@@ -346,10 +382,10 @@
 
         /* 通知 Toast */
         .toast-container {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: rgba(31, 30, 28, 0.95); color: #FAF9F5; padding: 12px 28px;
-            border-radius: 50px; font-size: 0.8rem; font-weight: 500;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(45, 44, 42, 0.95); backdrop-filter: blur(8px); color: #FAF9F5; padding: 14px 32px;
+            border-radius: 50px; font-size: 0.85rem; font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); letter-spacing: 0.05em;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
             z-index: 1000; opacity: 0; pointer-events: none; display: flex; align-items: center; gap: 8px;
         }
@@ -361,14 +397,13 @@
     <div class="header">
         <div class="header-logo">
             <span class="brand">Bespoke</span>
-            <span class="sub-brand">PRO LIGHTBOX SYSTEM</span>
+            <span class="sub-brand">LIGHTBOX SYSTEM</span>
         </div>
         <span id="status" class="status-pill">STANDBY</span>
     </div>
 
     <div class="container">
         
-        <!-- Lightbox 虛擬預覽與連線管理 -->
         <div class="card">
             <div class="card-header">
                 <div>
@@ -403,12 +438,11 @@
                 <button class="btn btn-outline" onclick="vibrate(); typeof disconnect === 'function' ? disconnect() : showToast('模擬環境：已中斷連線')">中斷連線</button>
             </div>
             <div style="font-size: 0.75rem; color: var(--text-secondary); border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 15px; display: flex; justify-content: space-between;">
-                <span>設備廣播：<span id="info" style="font-family: monospace; font-weight: 600; color: var(--text-primary);">--</span></span>
-                <span>系統頻道</span>
+                <span>設備：<span id="info" style="font-family: monospace; font-weight: 600; color: var(--text-primary);">--</span></span>
+                <!--<span>系統頻道</span>-->
             </div>
         </div>
 
-        <!-- 商業調光控制、ECO 與 定時模式 -->
         <div class="card">
             <div class="card-header">
                 <div>
@@ -417,33 +451,30 @@
                 </div>
             </div>
 
-            <!-- 無級亮度調節 -->
             <div class="slider-container">
                 <div class="slider-label-group">
-                    <span class="slider-label">商用發光亮度調節</span>
+                    <span class="slider-label">發光亮度調節</span>
                     <span class="slider-value" id="brightnessVal">85%</span>
                 </div>
-                <input type="range" id="brightnessInput" class="custom-range" min="0" max="100" value="85" oninput="updateBrightness(this.value)" onchange="vibrateLight()">
+                <input type="range" id="brightnessInput" class="custom-range" min="0" max="100" value="85" oninput="updateBrightness(this.value);" onchange="vibrateLight()">
             </div>
 
-            <!-- ECO 智能節能模式 -->
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 24px;">
                 <button id="ecoBtn" class="btn btn-eco" onclick="toggleEcoMode()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-                    <span>ECO 智能營業節能 (鎖定亮度30%)</span>
+                    <span>ECO 智能節能 (鎖定亮度30%)</span>
                 </button>
             </div>
 
-            <!-- 營業定時關閉 (Sleep Timer) -->
-            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
-                <div class="slider-label-group" style="margin-bottom: 12px;">
+            <div style="margin-top: 28px; padding-top: 24px; border-top: 1px dashed var(--border-color);">
+                <div class="slider-label-group" style="margin-bottom: 16px;">
                     <span class="slider-label">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        營業定時關閉 (Sleep Timer)
+                        定時關閉 (Sleep Timer)
                     </span>
                     <span class="slider-value" id="timerStatus" style="font-size: 0.75rem; color: var(--text-secondary);">未設定</span>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
                     <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem;" onclick="setTimer(15)">15分</button>
                     <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem;" onclick="setTimer(30)">30分</button>
                     <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem;" onclick="setTimer(60)">60分</button>
@@ -451,30 +482,28 @@
                 </div>
             </div>
 
-            <div style="height: 1px; background: var(--border-color); margin: 24px 0 20px;"></div>
+            <div style="height: 1px; background: var(--border-color); margin: 28px 0 24px;"></div>
 
-            <!-- 靜態調色盤 -->
-            <div class="slider-label" style="margin-bottom: 8px;">靜態商用專屬色系</div>
+            <div class="slider-label" style="margin-bottom: 12px;">靜態專屬色系</div>
             <div class="color-control-wrapper">
                 <div class="color-picker-round">
                     <input type="color" id="rgbInput" value="#FFEAD2" onchange="vibrate(); applyCustomColor(this.value)">
                 </div>
                 <div class="preset-colors">
-                    <div class="preset-dot active" style="background: #FFEAD2;" title="首爾落日暖橘" onclick="applyPreset('#FFEAD2', this)"></div>
-                    <div class="preset-dot" style="background: #FFFDFC;" title="極簡石膏冷白" onclick="applyPreset('#FFFDFC', this)"></div>
-                    <div class="preset-dot" style="background: #EBE1D7;" title="高雅燕麥杏白" onclick="applyPreset('#EBE1D7', this)"></div>
-                    <div class="preset-dot" style="background: #FFD3B6;" title="江南霓虹暖粉" onclick="applyPreset('#FFD3B6', this)"></div>
-                    <div class="preset-dot" style="background: #A8E6CF;" title="濟州薄荷清綠" onclick="applyPreset('#A8E6CF', this)"></div>
-                    <div class="preset-dot" style="background: #DCE5E7;" title="漢江清晨天藍" onclick="applyPreset('#DCE5E7', this)"></div>
+                    <div class="preset-dot active" style="--dot-color: #FFEAD2; background: var(--dot-color);" title="落日暖橘" onclick="applyPreset('#FFEAD2', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #FFFDFC; background: var(--dot-color);" title="極簡石膏冷白" onclick="applyPreset('#FFFDFC', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #EBE1D7; background: var(--dot-color);" title="高雅燕麥杏白" onclick="applyPreset('#EBE1D7', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #FFD3B6; background: var(--dot-color);" title="霓虹暖粉" onclick="applyPreset('#FFD3B6', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #A8E6CF; background: var(--dot-color);" title="薄荷清綠" onclick="applyPreset('#A8E6CF', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #DCE5E7; background: var(--dot-color);" title="清晨天藍" onclick="applyPreset('#DCE5E7', this)"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 商用動態特效控制 & 動態律動速度 -->
         <div class="card">
             <div class="card-header">
                 <div>
-                    <h3 class="card-title">商業行銷動態特效</h3>
+                    <h3 class="card-title">行銷動態特效</h3>
                     <div class="card-title-eng">Dynamic Effects & Rhythm</div>
                 </div>
             </div>
@@ -524,7 +553,6 @@
                 </div>
             </div>
 
-            <!-- 動態律動節奏滑桿 -->
             <div class="slider-container" style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
                 <div class="slider-label-group">
                     <span class="slider-label">
@@ -533,7 +561,7 @@
                     </span>
                     <span class="slider-value" id="speedVal">標準 1.0x</span>
                 </div>
-                <input type="range" id="speedInput" class="custom-range" min="50" max="150" value="100" oninput="updateSpeed(this.value)" onchange="vibrateLight()">
+                <input type="range" id="speedInput" class="custom-range" min="50" max="150" value="100" oninput="updateSpeed(this.value);" onchange="vibrateLight()">
                 <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-secondary); margin-top: 4px;">
                     <span>舒緩漸變</span>
                     <span>活潑動感</span>
@@ -549,15 +577,94 @@
 
     </div>
 
-    <!-- 底部微烤吐司通知 -->
     <div class="toast-container" id="toast">
         <span id="toastMsg">系統就緒</span>
     </div>
 
-    <!-- 引入您原有的藍牙/WebSocket 邏輯 -->
     <script src="app.js"></script>
     
     <script>
+        // --- 核心變數 ---
+        let currentMode = 'static'; 
+        let currentHex = '#FFEAD2';
+        let brightness = 85;
+        let savedBrightness = 85; 
+        let isEcoMode = false;
+        let effectSpeedMulti = 1.0; 
+        let animationTimer = null;
+        
+        // 計時器變數
+        let shutdownTimeout = null;
+        let countdownInterval = null;
+        
+        // 特效進度參數
+        let flowIndex = 0;
+        let rainbowHue = 0;
+
+        // ==========================================
+        // 🌟 新增：智慧記憶功能 (Local Storage)
+        // ==========================================
+        function saveSettings() {
+            // 不保存因 ECO 模式造成的臨時亮度下降
+            const settingsToSave = {
+                mode: currentMode,
+                hex: currentHex,
+                brightness: isEcoMode ? savedBrightness : brightness, 
+                speed: effectSpeedMulti
+            };
+            localStorage.setItem('bespokeSettings', JSON.stringify(settingsToSave));
+        }
+
+        function loadSettings() {
+            const savedStr = localStorage.getItem('bespokeSettings');
+            if (savedStr) {
+                try {
+                    const settings = JSON.parse(savedStr);
+                    
+                    // 1. 恢復系統變數
+                    if (settings.mode) currentMode = settings.mode;
+                    if (settings.hex) currentHex = settings.hex;
+                    if (settings.brightness !== undefined) brightness = settings.brightness;
+                    if (settings.speed) effectSpeedMulti = settings.speed;
+
+                    // 2. 恢復「亮度」介面
+                    const bInput = document.getElementById("brightnessInput");
+                    bInput.value = brightness;
+                    document.getElementById("brightnessVal").innerText = brightness + "%";
+                    
+                    // 3. 恢復「律動速度」介面
+                    const sInput = document.getElementById("speedInput");
+                    const speedValInt = Math.round(effectSpeedMulti * 100);
+                    sInput.value = speedValInt;
+                    document.getElementById("speedVal").innerText = (effectSpeedMulti == 1.0 ? "標準" : effectSpeedMulti < 1.0 ? "舒緩" : "動感") + " " + effectSpeedMulti + "x";
+
+                    // 4. 恢復「色彩調色盤」介面
+                    document.getElementById("rgbInput").value = currentHex;
+                    document.querySelectorAll('.preset-dot').forEach(dot => dot.classList.remove('active'));
+                    
+                    if (currentMode === 'static') {
+                        // 尋找對應顏色的 preset-dot (利用 onclick 屬性字串比對)
+                        let found = false;
+                        document.querySelectorAll('.preset-dot').forEach(dot => {
+                            if (dot.getAttribute('onclick').toUpperCase().includes(currentHex.toUpperCase())) {
+                                dot.classList.add('active');
+                                found = true;
+                            }
+                        });
+                        document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
+                    } else {
+                        // 5. 恢復「特效」介面
+                        document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
+                        const activeCard = document.getElementById(`effect-${currentMode}`);
+                        if (activeCard) activeCard.classList.add('active');
+                    }
+                } catch(e) {
+                    console.error("載入記憶設定失敗", e);
+                }
+            }
+        }
+
+
         // --- UI Haptic Feedback (觸覺震動回饋) ---
         function vibrate() {
             if (navigator.vibrate) navigator.vibrate(15);
@@ -575,7 +682,7 @@
                 if (txt.includes("已就緒") || txt.includes("已連線")) {
                     statusEl.classList.add("status-success");
                     statusEl.innerText = "CONNECTED";
-                    showToast("已與品牌燈箱建立高速連結");
+                    showToast("已與燈箱連結");
                 } else if (txt.includes("搜尋") || txt.includes("連線中")) {
                     statusEl.classList.add("status-warning");
                     statusEl.innerText = "SCANNING";
@@ -586,23 +693,6 @@
             });
             observer.observe(statusEl, { childList: true, characterData: true, subtree: true });
         }
-
-        // --- 核心變數 ---
-        let currentMode = 'static'; 
-        let currentHex = '#FFEAD2';
-        let brightness = 85;
-        let savedBrightness = 85; 
-        let isEcoMode = false;
-        let effectSpeedMulti = 1.0; 
-        let animationTimer = null;
-        
-        // 計時器變數
-        let shutdownTimeout = null;
-        let countdownInterval = null;
-        
-        // 特效進度參數
-        let flowIndex = 0;
-        let rainbowHue = 0;
 
         // --- 模擬器控制與動畫邏輯 ---
         function updateLedSimulator() {
@@ -676,8 +766,8 @@
                 const baseInterval = 30;
                 let angle = 0;
                 animationTimer = setInterval(() => {
-                    angle += 0.05 * effectSpeedMulti; // 控制呼吸步進速度
-                    const factor = (Math.sin(angle) + 1) / 2 * 0.8 + 0.2; // 介於 0.2 到 1.0 之間
+                    angle += 0.05 * effectSpeedMulti; 
+                    const factor = (Math.sin(angle) + 1) / 2 * 0.8 + 0.2; 
                     
                     const glowColor = hexToRgba(currentHex, actualBrightness * factor);
                     leds.forEach(led => {
@@ -698,29 +788,30 @@
             
             if (isEcoMode) {
                 savedBrightness = brightness;
+                brightInput.value = 30;
                 updateBrightness(30);
                 brightInput.disabled = true;
                 ecoBtn.classList.add("active");
-                ecoBtn.querySelector("span").innerText = "ECO 營業節能運作中 (鎖定30%)";
+                ecoBtn.querySelector("span").innerText = "ECO 節能運作中 (鎖定30%)";
                 
                 if (typeof sendCmd === 'function') sendCmd('ECO_ON');
                 showToast("已啟動 ECO 節能模式");
             } else {
                 brightInput.disabled = false;
-                updateBrightness(savedBrightness);
                 brightInput.value = savedBrightness;
+                updateBrightness(savedBrightness);
                 ecoBtn.classList.remove("active");
-                ecoBtn.querySelector("span").innerText = "ECO 智能營業節能 (鎖定亮度30%)";
+                ecoBtn.querySelector("span").innerText = "ECO 智能節能 (鎖定亮度30%)";
                 
                 if (typeof sendCmd === 'function') sendCmd('ECO_OFF');
                 showToast("ECO 已解除");
             }
+            // ECO 模式屬於暫時操作，不寫入持久化記憶中
         }
 
         // --- 營業定時關閉 (Timer) 邏輯 ---
         function setTimer(minutes) {
             vibrate();
-            // 先清除舊的計時器
             if (shutdownTimeout) clearTimeout(shutdownTimeout);
             if (countdownInterval) clearInterval(countdownInterval);
 
@@ -736,7 +827,6 @@
 
             let remainingSeconds = minutes * 60;
             
-            // 更新 UI 倒數顯示
             const updateText = () => {
                 const m = Math.floor(remainingSeconds / 60);
                 const s = remainingSeconds % 60;
@@ -755,12 +845,9 @@
                 }
             }, 1000);
 
-            // 若使用者停留在畫面上，時間到就執行。
             shutdownTimeout = setTimeout(() => {
-                // 防呆，已交由 setInterval 觸發
             }, minutes * 60 * 1000);
 
-            // 也將定時信號送給硬體，若網頁關閉硬體仍可獨立倒數
             if (typeof sendCmd === 'function') sendCmd(`TIMER_${minutes}`);
             showToast(`已設定 ${minutes} 分鐘後自動休眠`);
         }
@@ -771,22 +858,19 @@
             statusEl.innerText = '已休眠';
             statusEl.style.color = 'var(--color-danger)';
             
-            // 如果開著 ECO，先解除
             if (isEcoMode) toggleEcoMode();
             
-            // 亮度歸零（視覺關閉）
-            document.getElementById("brightnessInput").value = 0;
+            const brightInput = document.getElementById("brightnessInput");
+            brightInput.value = 0;
             updateBrightness(0);
             
-            // 停止所有動態特效
             stopEffects();
 
-            // 送出關機指令與亮度 0 給硬體端
             if (typeof sendCmd === 'function') {
                 sendCmd('POWER_OFF');
                 sendCmd('BRIGHT_0');
             }
-            showToast('營業定時結束，燈箱已進入休眠');
+            showToast('定時結束，燈箱已進入休眠');
             vibrate();
         }
 
@@ -795,6 +879,7 @@
             brightness = val;
             document.getElementById("brightnessVal").innerText = val + "%";
             updateLedSimulator();
+            saveSettings(); // 儲存記憶
             
             if (typeof sendCmd === 'function') {
                 sendCmd(`BRIGHT_${val}`);
@@ -807,6 +892,7 @@
             document.getElementById("speedVal").innerText = (effectSpeedMulti == 1.0 ? "標準" : effectSpeedMulti < 1.0 ? "舒緩" : "動感") + " " + effectSpeedMulti + "x";
             
             updateLedSimulator();
+            saveSettings(); // 儲存記憶
             
             if (typeof sendCmd === 'function') {
                 sendCmd(`SPEED_${val}`);
@@ -825,6 +911,7 @@
             
             document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
             updateLedSimulator();
+            saveSettings(); // 儲存記憶
             
             if(typeof sendRGB === 'function') sendRGB();
             showToast(`已套用：${element ? element.title : '品牌原創色'}`);
@@ -836,6 +923,7 @@
             currentMode = 'static';
             document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
             updateLedSimulator();
+            saveSettings(); // 儲存記憶
             
             if(typeof sendRGB === 'function') sendRGB();
             showToast("已變更客製化色系");
@@ -850,6 +938,7 @@
 
             currentMode = effectName;
             updateLedSimulator();
+            saveSettings(); // 儲存記憶
 
             if (typeof sendCmd === 'function') {
                 if (effectName === 'fire') {
@@ -883,6 +972,7 @@
             document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
             currentMode = 'static';
             updateLedSimulator();
+            saveSettings(); // 儲存記憶
             
             if (typeof sendCmd === 'function') sendCmd('MODE_STATIC');
             if(typeof sendRGB === 'function') sendRGB();
@@ -907,9 +997,22 @@
             setTimeout(() => { toast.classList.remove("show"); }, 3000);
         }
 
+        // --- 系統初始化 ---
         window.onload = function() {
+            // 1. 優先載入並恢復儲存的狀態
+            loadSettings(); 
+            
+            // 2. 更新模擬器以符合恢復的狀態
             updateLedSimulator();
-            showToast("歡迎使用 Bespoke 燈箱控制系統");
+            
+            // 3. 初始化並填滿滑桿漸層 (依照記憶的數值)
+            //updateSliderTrack(document.getElementById("brightnessInput"));
+            //updateSliderTrack(document.getElementById("speedInput"));
+            
+            // 4. 歡迎通知
+            setTimeout(() => {
+                showToast("歡迎使用 Bespoke 燈箱控制系統");
+            }, 600); // 稍微延遲以配合進場動畫
         }
     </script>
 </body>
