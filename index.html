@@ -4,39 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BESPOKE - 燈箱控制系統</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* 韓系暖奶油白設計語彙 */
-            --bg-canvas: #FAF9F5;
-            --bg-card: #FFFFFF;
-            --border-color: #EAE8E0;
-            --text-primary: #1F1E1C;
-            --text-secondary: #8E8A82;
+            /* 韓系極簡：燕麥奶油底色 */
+            --bg-canvas: #F5F3EC; 
+            /* 韓系透視：毛玻璃白 */
+            --bg-card: rgba(255, 255, 255, 0.75);
+            /* 高光邊緣取代實體灰框 */
+            --border-highlight: rgba(255, 255, 255, 1);
             
-            /* 奢華點綴色 */
-            --accent-gold: #C5A880;
-            --accent-gold-hover: #B3966F;
-            --accent-eco: #8FA993; /* 節能特調低飽和鼠尾草綠 */
+            --text-primary: #2C2B29;
+            --text-secondary: #96938D;
             
-            /* 狀態色 */
-            --color-success: #7EA082;
-            --color-danger: #D98880;
-            --color-warning: #E8C17F;
+            /* 奢華點綴色：降低飽和度 */
+            --accent-gold: #C2A782;
+            --accent-eco: #98A89A; 
             
-            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --color-success: #8BA88F;
+            --color-danger: #D69792;
+            --color-warning: #D1B17B;
+            
+            --transition-smooth: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        /* --- 沉浸式進場動畫定義 --- */
         @keyframes slideUpFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(25px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         body { 
@@ -46,348 +40,174 @@
             color: var(--text-primary); 
             user-select: none; -webkit-user-select: none;
             overflow-x: hidden;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.05em;
         }
 
-        /* 頂部導覽列 (加入進場動畫) */
+        /* 頂部導覽列 (毛玻璃極簡) */
         .header { 
-            background: rgba(250, 249, 245, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(245, 243, 236, 0.6);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             padding: 20px 32px; 
             position: sticky; top: 0; z-index: 100; 
-            border-bottom: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center;
             opacity: 0;
-            animation: slideUpFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: slideUpFadeIn 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+            border-bottom: 1px solid rgba(255,255,255,0.4);
         }
 
-        .header-logo {
-            display: flex;
-            flex-direction: column;
-        }
-
+        .header-logo { display: flex; flex-direction: column; }
         .header-logo .brand {
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            color: var(--text-primary);
-            text-transform: uppercase;
+            font-size: 1.15rem; font-weight: 600; letter-spacing: 0.25em;
+            color: var(--text-primary); text-transform: uppercase;
+        }
+        .header-logo .sub-brand {
+            font-size: 0.6rem; font-weight: 300; color: var(--text-secondary);
+            letter-spacing: 0.2em; margin-top: 4px;
         }
 
-        .header-logo .sub-brand {
-            font-size: 0.65rem;
-            font-weight: 400;
-            color: var(--text-secondary);
-            letter-spacing: 0.1em;
-            margin-top: 2px;
+        /* 狀態 SVG 圖示 */
+        .status-icon { 
+            display: flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%; /* 韓系圓潤 */
+            background: rgba(255,255,255,0.8); color: var(--text-secondary); 
+            transition: var(--transition-smooth); box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .status-icon.success { color: var(--color-success); box-shadow: 0 4px 15px rgba(139, 168, 143, 0.2); }
+        .status-icon.warning { color: var(--color-warning); animation: pulse-warning 2s infinite alternate; }
+        .status-icon.danger { color: var(--color-danger); }
+        @keyframes pulse-warning {
+            from { box-shadow: 0 0 0px rgba(209, 177, 123, 0); }
+            to { box-shadow: 0 4px 20px rgba(209, 177, 123, 0.4); }
         }
 
         /* 主容器 */
         .container { 
-            padding: 24px; 
-            max-width: 900px; 
-            margin: auto; 
-            display: grid; 
-            grid-template-columns: 1fr;
-            gap: 24px; 
-            box-sizing: border-box;
+            padding: 24px; max-width: 900px; margin: auto; 
+            display: grid; grid-template-columns: 1fr; gap: 28px; box-sizing: border-box;
+            padding-bottom: 60px;
         }
 
-        /* 卡片設計 (加入進場動畫與微弱時差) */
+        /* 韓系毛玻璃卡片 */
         .card { 
             background: var(--bg-card); 
-            border-radius: 24px; 
-            padding: 32px; 
-            border: 1px solid var(--border-color);
-            box-shadow: 0 10px 35px rgba(31, 30, 28, 0.02);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border-radius: 36px; /* 極致圓潤 */
+            padding: 36px; 
+            border: 1px solid var(--border-highlight); /* 白色高光邊取代灰線 */
+            box-shadow: 0 20px 50px rgba(160, 155, 145, 0.08); /* 柔和擴散陰影 */
             transition: var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-            opacity: 0;
-            animation: slideUpFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0; animation: slideUpFadeIn 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
         }
-        
-        .card:hover {
-            box-shadow: 0 15px 45px rgba(197, 168, 128, 0.06);
-            border-color: #DFDCD3;
-        }
-
-        /* 卡片階層延遲出現，創造高級儀式感 */
+        .card:hover { box-shadow: 0 25px 60px rgba(194, 167, 130, 0.12); }
         .container .card:nth-child(1) { animation-delay: 0.1s; }
         .container .card:nth-child(2) { animation-delay: 0.2s; }
         .container .card:nth-child(3) { animation-delay: 0.3s; }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 28px;
-        }
-        
-        .card-title { 
-            font-size: 1.1rem; 
-            color: var(--text-primary); 
-            margin: 0;
-            font-weight: 700; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-            letter-spacing: 0.05em;
-        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .card-title { font-size: 1.05rem; color: var(--text-primary); margin: 0; font-weight: 600; letter-spacing: 0.1em; }
+        .card-title-eng { font-size: 0.6rem; color: var(--text-secondary); font-weight: 300; text-transform: uppercase; letter-spacing: 0.25em; margin-top: 6px; }
 
-        .card-title-eng {
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 0.15em; 
-            margin-top: 4px;
-        }
-
-        /* 擬真燈箱預覽組件 */
+        /* 擬真燈箱組件 */
         .lightbox-simulator {
-            background: #111110;
-            border-radius: 20px;
-            padding: 40px 20px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.15);
-            margin-bottom: 8px;
+            background: #1C1B1A; border-radius: 24px; padding: 45px 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.6); margin-bottom: 12px;
         }
-
-        /* 虛擬 8 顆 LED */
-        .led-strip-preview {
-            display: flex;
-            justify-content: space-between;
-            width: 85%;
-            margin-bottom: 24px;
-            position: relative;
-        }
-
-        .led-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #2D2C2A;
-            transition: all 0.25s ease;
-            box-shadow: 0 0 2px rgba(0,0,0,0.5);
-        }
-
-        /* 壓克力發光燈箱招牌本體 */
+        .led-strip-preview { display: flex; justify-content: space-between; width: 80%; margin-bottom: 28px; }
+        .led-dot { width: 10px; height: 10px; border-radius: 50%; background: #33322F; transition: all 0.3s ease; }
+        
         .acrylic-sign {
-            width: 85%;
-            max-width: 320px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(5px);
-            border-radius: 12px;
-            padding: 18px 24px;
-            text-align: center;
-            border: 4px solid #DFDCD3;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            width: 80%; max-width: 300px;
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
+            border-radius: 16px; padding: 20px 24px; text-align: center;
+            border: 2px solid rgba(255,255,255,1);
             transition: var(--transition-smooth);
-            z-index: 2;
         }
+        .acrylic-sign h4 { margin: 0; font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 200; letter-spacing: 0.3em; color: #1A1A1A; }
+        .acrylic-sign p { margin: 6px 0 0; font-size: 0.6rem; font-weight: 300; letter-spacing: 0.2em; color: var(--text-secondary); text-transform: uppercase; }
 
-        .acrylic-sign h4 {
-            margin: 0;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 300;
-            letter-spacing: 0.25em;
-            color: #1A1A1A;
-            text-transform: uppercase;
-        }
-
-        .acrylic-sign p {
-            margin: 4px 0 0;
-            font-size: 0.65rem;
-            font-weight: 400;
-            letter-spacing: 0.15em;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-        }
-
-        /* 按鈕與互動元件 */
+        /* 按鈕：全面進化為「膠囊幾何」 */
         .btn { 
-            border: none; 
-            border-radius: 14px; 
-            padding: 14px 20px; 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: var(--transition-smooth); 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px;
+            border: none; border-radius: 50px; /* 完美膠囊 */
+            padding: 16px 24px; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em;
+            cursor: pointer; transition: var(--transition-smooth); 
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        .btn:active { transform: scale(0.96); }
         
-        .btn-primary { 
-            background: var(--text-primary); 
-            color: #FAF9F5; 
-        }
-        .btn-primary:hover { 
-            background: #363430;
-        }
+        .btn-primary { background: var(--text-primary); color: #FFF; box-shadow: 0 10px 25px rgba(44, 43, 41, 0.2); }
+        .btn-primary:hover { background: #403E3A; box-shadow: 0 12px 30px rgba(44, 43, 41, 0.3); }
         
-        .btn-outline { 
-            background: transparent; 
-            color: var(--text-primary); 
-            border: 1px solid var(--border-color); 
-        }
-        .btn-outline:hover {
-            background: #F4F2EB;
-            border-color: #D3CEBF;
-        }
+        .btn-outline { background: rgba(255,255,255,0.6); color: var(--text-primary); border: 1px solid rgba(0,0,0,0.05); }
+        .btn-outline:hover { background: #FFF; box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
 
-        /* ECO 節能模式按鈕 */
-        .btn-eco {
-            background: #F0F4F1;
-            color: var(--accent-eco);
-            border: 1px solid #E1E8E3;
-            width: 100%;
-        }
-        .btn-eco.active {
-            background: var(--accent-eco);
-            color: #FFFFFF;
-            border-color: var(--accent-eco);
-            box-shadow: 0 4px 15px rgba(143, 169, 147, 0.3);
-        }
+        .btn-eco { background: rgba(152, 168, 154, 0.1); color: var(--accent-eco); }
+        .btn-eco.active { background: var(--accent-eco); color: #FFF; box-shadow: 0 8px 25px rgba(152, 168, 154, 0.4); }
 
-        /* 經典韓系網格特效選擇器 */
-        .effects-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 600px) {
-            .effects-grid { grid-template-columns: 1fr; }
-        }
-
+        /* 特效選擇器：取消實體框，改為浮動透視 */
+        .effects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 12px; }
         .effect-card {
-            background: var(--bg-canvas);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 24px; padding: 20px 16px; cursor: pointer; transition: var(--transition-smooth);
+            text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
         }
-
-        .effect-card:hover {
-            border-color: var(--accent-gold);
-            transform: translateY(-2px);
-            background: #FFFDFC;
+        .effect-card:hover { background: rgba(255,255,255,0.8); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
+        .effect-card.active { 
+            background: #FFF; border-color: var(--accent-gold); 
+            box-shadow: 0 12px 30px rgba(194, 167, 130, 0.15); 
         }
+        .effect-name { font-size: 0.8rem; font-weight: 500; color: var(--text-primary); letter-spacing: 0.1em;}
+        .effect-desc { font-size: 0.65rem; font-weight: 300; color: var(--text-secondary); line-height: 1.4; }
 
-        .effect-card.active {
-            background: #FAF6F0;
-            border-color: var(--accent-gold);
-            box-shadow: 0 4px 15px rgba(197, 168, 128, 0.12);
-        }
-
-        .effect-icon { margin-bottom: 4px; }
-        .effect-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
-        .effect-desc { font-size: 0.7rem; color: var(--text-secondary); line-height: 1.3; }
-
-        /* 質感滑桿 Slider 優化 (粗軌道設計) */
-        .slider-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-top: 18px;
-        }
-
+        /* ========================================= */
+        /* 質感滑桿 Slider (韓系秀氣版 + 完美數學陰影) */
+        /* ========================================= */
+        .slider-container { display: flex; flex-direction: column; gap: 18px; margin-top: 24px; }
         .slider-label-group { display: flex; justify-content: space-between; align-items: center; }
-        .slider-label { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;}
-        .slider-value { font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--accent-gold); }
+        .slider-label { font-size: 0.8rem; font-weight: 500; color: var(--text-primary); display: flex; align-items: center; gap: 10px; letter-spacing: 0.1em;}
+        .slider-value { font-family: 'Montserrat', sans-serif; font-size: 0.95rem; font-weight: 400; color: var(--accent-gold); }
 
-        /* 質感滑桿 Slider (終極完美無縫版) */
         .custom-range {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 24px; 
-            border-radius: 12px;
-            background: var(--border-color); 
-            outline: none;
-            overflow: hidden; /* 切除多餘溢出，保持膠囊狀 */
-            cursor: pointer;
+            -webkit-appearance: none; width: 100%; height: 14px; /* 變秀氣 */
+            border-radius: 20px; background: rgba(0,0,0,0.04); 
+            outline: none; overflow: hidden; cursor: pointer;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
         }
-        
         .custom-range::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
-            width: 24px; height: 24px; border-radius: 50%;
-            background: #FFFFFF; 
-            /* 魔法數學修正：擴散 4000px，並往左偏移 4012px，剛好將直線藏在圓心 (12px) 處完美隱藏！ */
-            box-shadow: -4012px 0 0 4000px var(--accent-gold), inset 0 2px 4px rgba(0,0,0,0.1); 
-            transition: background 0.1s;
-        }
-        
-        .custom-range::-webkit-slider-thumb:active { 
-            background: #F4F2EB; 
-        }
-        
-        .custom-range:disabled { 
-            opacity: 0.5; cursor: not-allowed; 
+            width: 14px; height: 14px; border-radius: 50%;
+            background: #FFF; 
+            /* 數學修正：擴散 4000px，往左偏移 4007px (因半徑為 7px)，完美貼合 */
+            box-shadow: -4007px 0 0 4000px var(--accent-gold), 0 0 5px rgba(0,0,0,0.1); 
         }
 
-        /* 色彩選擇與快速預設 */
-        .color-control-wrapper { display: flex; gap: 16px; align-items: center; margin-top: 12px; }
+        /* 色彩選擇：雙層光環保留，調整更細緻 */
+        .color-control-wrapper { display: flex; gap: 16px; align-items: center; margin-top: 16px; }
         .color-picker-round {
-            position: relative; width: 52px; height: 52px; border-radius: 50%;
-            overflow: hidden; border: 2px solid #FFFFFF; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative; width: 44px; height: 44px; border-radius: 50%;
+            overflow: hidden; border: 2px solid #FFF; box-shadow: 0 4px 15px rgba(0,0,0,0.06);
             cursor: pointer; flex-shrink: 0;
         }
-        input[type="color"] {
-            position: absolute; top: -10px; left: -10px; width: 80px; height: 80px;
-            border: none; padding: 0; cursor: pointer; background: none;
-        }
-        .preset-colors { display: flex; gap: 12px; flex-wrap: wrap; flex-grow: 1; }
-        
-        /* 雙層光環選色優化 */
+        input[type="color"] { position: absolute; top: -10px; left: -10px; width: 80px; height: 80px; border: none; cursor: pointer; }
+        .preset-colors { display: flex; gap: 14px; flex-wrap: wrap; flex-grow: 1; }
         .preset-dot {
-            width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+            width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
             transition: var(--transition-smooth); position: relative;
         }
-        .preset-dot:hover { transform: scale(1.1); }
         .preset-dot.active { 
-            box-shadow: 0 0 0 3px var(--bg-card), 0 0 0 5px var(--dot-color);
-            transform: scale(1.05); 
+            box-shadow: 0 0 0 3px var(--bg-card), 0 0 0 4px var(--dot-color);
+            transform: scale(1.1); 
         }
-
-        /* 狀態標籤 */
-        .status-pill { 
-            padding: 6px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 600;
-            background: #EAE8E0; color: var(--text-secondary); transition: var(--transition-smooth);
-            display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.05em;
-        }
-        .status-pill::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary); }
-        .status-success { background: #E9F4EC; color: var(--color-success); }
-        .status-success::before { background: var(--color-success); }
-        .status-warning { background: #FFF9ED; color: var(--color-warning); }
-        .status-warning::before { background: var(--color-warning); }
-        .status-danger { background: #FDF1F0; color: var(--color-danger); }
-        .status-danger::before { background: var(--color-danger); }
 
         /* 通知 Toast */
         .toast-container {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: rgba(45, 44, 42, 0.95); backdrop-filter: blur(8px); color: #FAF9F5; padding: 14px 32px;
-            border-radius: 50px; font-size: 0.85rem; font-weight: 500;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); letter-spacing: 0.05em;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
-            z-index: 1000; opacity: 0; pointer-events: none; display: flex; align-items: center; gap: 8px;
+            background: rgba(44, 43, 41, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            color: #FAF9F5; padding: 16px 36px; border-radius: 50px; font-size: 0.8rem; font-weight: 300;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15); letter-spacing: 0.1em;
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s;
+            z-index: 1000; opacity: 0; pointer-events: none;
         }
         .toast-container.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
@@ -397,9 +217,15 @@
     <div class="header">
         <div class="header-logo">
             <span class="brand">Bespoke</span>
-            <span class="sub-brand">LIGHTBOX SYSTEM</span>
+            <span class="sub-brand">PRO LIGHTBOX SYSTEM</span>
         </div>
-        <span id="status" class="status-pill">STANDBY</span>
+        <span id="status" style="display: none;">STANDBY</span>
+        <div id="statusIcon" class="status-icon danger" title="未連線 (STANDBY)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+                <line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
+            </svg>
+        </div>
     </div>
 
     <div class="container">
@@ -407,38 +233,33 @@
         <div class="card">
             <div class="card-header">
                 <div>
-                    <h3 class="card-title">燈箱視覺狀態模擬</h3>
+                    <h3 class="card-title">燈箱視覺狀態</h3>
                     <div class="card-title-eng">Visualizer & Core Connect</div>
                 </div>
             </div>
             
             <div class="lightbox-simulator">
                 <div class="led-strip-preview" id="ledStrip">
-                    <div class="led-dot" id="led-0"></div>
-                    <div class="led-dot" id="led-1"></div>
-                    <div class="led-dot" id="led-2"></div>
-                    <div class="led-dot" id="led-3"></div>
-                    <div class="led-dot" id="led-4"></div>
-                    <div class="led-dot" id="led-5"></div>
-                    <div class="led-dot" id="led-6"></div>
-                    <div class="led-dot" id="led-7"></div>
+                    <div class="led-dot" id="led-0"></div><div class="led-dot" id="led-1"></div>
+                    <div class="led-dot" id="led-2"></div><div class="led-dot" id="led-3"></div>
+                    <div class="led-dot" id="led-4"></div><div class="led-dot" id="led-5"></div>
+                    <div class="led-dot" id="led-6"></div><div class="led-dot" id="led-7"></div>
                 </div>
-                
                 <div class="acrylic-sign" id="acrylicSign">
-                    <h4>coe</h4>
+                    <h4>COE</h4>
                     <p>6792@gcloud.csu.edu.tw</p>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-top: 15px;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-top: 24px;">
                 <button class="btn btn-primary" onclick="vibrate(); typeof connect === 'function' ? connect() : showToast('模擬環境：已嘗試連線')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                     <span>連接燈箱</span>
                 </button>
                 <button class="btn btn-outline" onclick="vibrate(); typeof disconnect === 'function' ? disconnect() : showToast('模擬環境：已中斷連線')">中斷連線</button>
             </div>
-            <div style="font-size: 0.75rem; color: var(--text-secondary); border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 15px; display: flex; justify-content: space-between;">
-                <span>設備：<span id="info" style="font-family: monospace; font-weight: 600; color: var(--text-primary);">--</span></span>
+            <div style="font-size: 0.65rem; color: var(--text-secondary); padding-top: 16px; margin-top: 16px; display: flex; justify-content: space-between; letter-spacing: 0.1em;">
+                <span>設備：<span id="info" style="font-family: 'Montserrat', monospace; color: var(--text-primary);">--</span></span>
                 <!--<span>系統頻道</span>-->
             </div>
         </div>
@@ -446,56 +267,56 @@
         <div class="card">
             <div class="card-header">
                 <div>
-                    <h3 class="card-title">色彩及情境規劃</h3>
+                    <h3 class="card-title">光感及情境</h3>
                     <div class="card-title-eng">Color, ECO & Timer</div>
                 </div>
             </div>
 
             <div class="slider-container">
                 <div class="slider-label-group">
-                    <span class="slider-label">發光亮度調節</span>
+                    <span class="slider-label">發光亮度</span>
                     <span class="slider-value" id="brightnessVal">85%</span>
                 </div>
-                <input type="range" id="brightnessInput" class="custom-range" min="0" max="100" value="85" oninput="updateBrightness(this.value);" onchange="vibrateLight()">
+                <input type="range" id="brightnessInput" class="custom-range" min="0" max="100" value="85" oninput="updateBrightness(this.value)" onchange="vibrateLight()">
             </div>
 
-            <div style="margin-top: 24px;">
-                <button id="ecoBtn" class="btn btn-eco" onclick="toggleEcoMode()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-                    <span>ECO 智能節能 (鎖定亮度30%)</span>
+            <div style="margin-top: 32px;">
+                <button id="ecoBtn" class="btn btn-eco" style="width: 100%;" onclick="toggleEcoMode()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                    <span>ECO 智慧節能 (鎖定 30%)</span>
                 </button>
             </div>
 
-            <div style="margin-top: 28px; padding-top: 24px; border-top: 1px dashed var(--border-color);">
-                <div class="slider-label-group" style="margin-bottom: 16px;">
+            <div style="margin-top: 32px; padding-top: 28px; border-top: 1px solid rgba(0,0,0,0.04);">
+                <div class="slider-label-group" style="margin-bottom: 20px;">
                     <span class="slider-label">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        定時關閉 (Sleep Timer)
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        定時休眠
                     </span>
-                    <span class="slider-value" id="timerStatus" style="font-size: 0.75rem; color: var(--text-secondary);">未設定</span>
+                    <span class="slider-value" id="timerStatus" style="font-size: 0.7rem; color: var(--text-secondary);">未設定</span>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
-                    <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem;" onclick="setTimer(15)">15分</button>
-                    <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem;" onclick="setTimer(30)">30分</button>
-                    <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem;" onclick="setTimer(60)">60分</button>
-                    <button class="btn btn-outline" style="padding: 10px 4px; font-size: 0.8rem; border-color: #FDF1F0; color: var(--color-danger); background: #FDF1F0;" onclick="setTimer(0)">取消</button>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+                    <button class="btn btn-outline" style="padding: 12px 0;" onclick="setTimer(15)">15分</button>
+                    <button class="btn btn-outline" style="padding: 12px 0;" onclick="setTimer(30)">30分</button>
+                    <button class="btn btn-outline" style="padding: 12px 0;" onclick="setTimer(60)">60分</button>
+                    <button class="btn btn-outline" style="padding: 12px 0; color: var(--color-danger); border-color: transparent; background: rgba(214, 151, 146, 0.1);" onclick="setTimer(0)">取消</button>
                 </div>
             </div>
 
-            <div style="height: 1px; background: var(--border-color); margin: 28px 0 24px;"></div>
+            <div style="height: 1px; background: rgba(0,0,0,0.04); margin: 32px 0 28px;"></div>
 
-            <div class="slider-label" style="margin-bottom: 12px;">靜態專屬色系</div>
+            <div class="slider-label" style="margin-bottom: 16px;">品牌色系</div>
             <div class="color-control-wrapper">
                 <div class="color-picker-round">
                     <input type="color" id="rgbInput" value="#FFEAD2" onchange="vibrate(); applyCustomColor(this.value)">
                 </div>
                 <div class="preset-colors">
-                    <div class="preset-dot active" style="--dot-color: #FFEAD2; background: var(--dot-color);" title="落日暖橘" onclick="applyPreset('#FFEAD2', this)"></div>
-                    <div class="preset-dot" style="--dot-color: #FFFDFC; background: var(--dot-color);" title="極簡石膏冷白" onclick="applyPreset('#FFFDFC', this)"></div>
-                    <div class="preset-dot" style="--dot-color: #EBE1D7; background: var(--dot-color);" title="高雅燕麥杏白" onclick="applyPreset('#EBE1D7', this)"></div>
-                    <div class="preset-dot" style="--dot-color: #FFD3B6; background: var(--dot-color);" title="霓虹暖粉" onclick="applyPreset('#FFD3B6', this)"></div>
-                    <div class="preset-dot" style="--dot-color: #A8E6CF; background: var(--dot-color);" title="薄荷清綠" onclick="applyPreset('#A8E6CF', this)"></div>
-                    <div class="preset-dot" style="--dot-color: #DCE5E7; background: var(--dot-color);" title="清晨天藍" onclick="applyPreset('#DCE5E7', this)"></div>
+                    <div class="preset-dot active" style="--dot-color: #FFEAD2; background: var(--dot-color);" onclick="applyPreset('#FFEAD2', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #FFFDFC; background: var(--dot-color);" onclick="applyPreset('#FFFDFC', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #EBE1D7; background: var(--dot-color);" onclick="applyPreset('#EBE1D7', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #FFD3B6; background: var(--dot-color);" onclick="applyPreset('#FFD3B6', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #A8E6CF; background: var(--dot-color);" onclick="applyPreset('#A8E6CF', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #DCE5E7; background: var(--dot-color);" onclick="applyPreset('#DCE5E7', this)"></div>
                 </div>
             </div>
         </div>
@@ -503,74 +324,74 @@
         <div class="card">
             <div class="card-header">
                 <div>
-                    <h3 class="card-title">行銷動態特效</h3>
-                    <div class="card-title-eng">Dynamic Effects & Rhythm</div>
+                    <h3 class="card-title">動態藝術</h3>
+                    <div class="card-title-eng">Dynamic Effects</div>
                 </div>
             </div>
 
             <div class="effects-grid">
                 <div class="effect-card" id="effect-fire" onclick="activateEffect('fire')">
                     <span class="effect-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
                     </span>
                     <span class="effect-name">曜暖火焰</span>
-                    <span class="effect-desc">優雅微爍黃光，營造高奢暖氛圍</span>
+                    <span class="effect-desc">微爍優雅黃光</span>
                 </div>
                 <div class="effect-card" id="effect-rainbow" onclick="activateEffect('rainbow')">
                     <span class="effect-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17a10 10 0 0 0-20 0"/><path d="M18 17a6 6 0 0 0-12 0"/><path d="M14 17a2 2 0 0 0-4 0"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17a10 10 0 0 0-20 0"/><path d="M18 17a6 6 0 0 0-12 0"/><path d="M14 17a2 2 0 0 0-4 0"/></svg>
                     </span>
                     <span class="effect-name">極光絢彩</span>
-                    <span class="effect-desc">韓系莫蘭迪粉彩慢速漸變</span>
+                    <span class="effect-desc">粉彩慢速漸變</span>
                 </div>
                 <div class="effect-card" id="effect-flow" onclick="activateEffect('flow')">
                     <span class="effect-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1S7 6.5 8 6s1.2-1 2.5-1S13 5.5 14 6s1.2 1 2.5 1S19 6.5 20 6s1.2-1 2.5-1S24 5.5 24 6"/><path d="M2 12c.6.5 1.2 1 2.5 1S7 12.5 8 12s1.2-1 2.5-1S13 11.5 14 12s1.2-1 2.5-1S19 12.5 20 12s1.2-1 2.5-1S24 11.5 24 12"/><path d="M2 18c.6.5 1.2 1 2.5 1S7 18.5 8 18s1.2-1 2.5-1S13 17.5 14 18s1.2-1 2.5-1S19 18.5 20 18s1.2-1 2.5-1S24 17.5 24 18"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1S7 6.5 8 6s1.2-1 2.5-1S13 5.5 14 6s1.2-1 2.5-1S19 6.5 20 6s1.2-1 2.5-1S24 5.5 24 6"/><path d="M2 12c.6.5 1.2 1 2.5 1S7 12.5 8 12s1.2-1 2.5-1S13 11.5 14 12s1.2-1 2.5-1S19 12.5 20 12s1.2-1 2.5-1S24 11.5 24 12"/><path d="M2 18c.6.5 1.2 1 2.5 1S7 18.5 8 18s1.2-1 2.5-1S13 17.5 14 18s1.2-1 2.5-1S19 18.5 20 18s1.2-1 2.5-1S24 17.5 24 18"/></svg>
                     </span>
                     <span class="effect-name">水光流螢</span>
-                    <span class="effect-desc">光點柔和律動流水Chasing</span>
+                    <span class="effect-desc">柔和律動流水</span>
                 </div>
                 <div class="effect-card" id="effect-breath" onclick="activateEffect('breath')">
                     <span class="effect-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
                     </span>
                     <span class="effect-name">靜謐呼吸</span>
-                    <span class="effect-desc">隨品牌主色系平滑漸明漸暗</span>
+                    <span class="effect-desc">平滑漸明漸暗</span>
                 </div>
                 <div class="effect-card" id="effect-star" onclick="activateEffect('star')">
                     <span class="effect-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                     </span>
                     <span class="effect-name">晨星微爍</span>
-                    <span class="effect-desc">鑽石般隨機高光微閃</span>
+                    <span class="effect-desc">鑽石隨機微閃</span>
                 </div>
                 <div class="effect-card" id="effect-meteor" onclick="activateEffect('meteor')">
                     <span class="effect-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L3 21"/><path d="M21 3L14 3"/><path d="M21 3L21 10"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L3 21"/><path d="M21 3L14 3"/><path d="M21 3L21 10"/></svg>
                     </span>
                     <span class="effect-name">香檳流星</span>
-                    <span class="effect-desc">吸睛拖尾彗星動態劃過</span>
+                    <span class="effect-desc">拖尾彗星劃過</span>
                 </div>
             </div>
 
-            <div class="slider-container" style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+            <div class="slider-container" style="margin-top: 32px; padding-top: 28px; border-top: 1px solid rgba(0,0,0,0.04);">
                 <div class="slider-label-group">
                     <span class="slider-label">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                        動態光效律動節奏
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        律動節奏
                     </span>
                     <span class="slider-value" id="speedVal">標準 1.0x</span>
                 </div>
-                <input type="range" id="speedInput" class="custom-range" min="50" max="150" value="100" oninput="updateSpeed(this.value);" onchange="vibrateLight()">
-                <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-secondary); margin-top: 4px;">
-                    <span>舒緩漸變</span>
-                    <span>活潑動感</span>
+                <input type="range" id="speedInput" class="custom-range" min="50" max="150" value="100" oninput="updateSpeed(this.value)" onchange="vibrateLight()">
+                <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--text-secondary); margin-top: 4px; letter-spacing: 0.15em;">
+                    <span>舒緩</span>
+                    <span>動感</span>
                 </div>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr; margin-top: 20px;">
+            <div style="margin-top: 24px;">
                 <button class="btn btn-outline" style="width: 100%;" onclick="vibrate(); stopEffects()">
-                    停止動態特效 (切回靜態光)
+                    切回恆亮
                 </button>
             </div>
         </div>
@@ -584,7 +405,6 @@
     <script src="app.js"></script>
     
     <script>
-        // --- 核心變數 ---
         let currentMode = 'static'; 
         let currentHex = '#FFEAD2';
         let brightness = 85;
@@ -592,23 +412,14 @@
         let isEcoMode = false;
         let effectSpeedMulti = 1.0; 
         let animationTimer = null;
-        
-        // 計時器變數
         let shutdownTimeout = null;
         let countdownInterval = null;
-        
-        // 特效進度參數
         let flowIndex = 0;
         let rainbowHue = 0;
 
-        // ==========================================
-        // 🌟 新增：智慧記憶功能 (Local Storage)
-        // ==========================================
         function saveSettings() {
-            // 不保存因 ECO 模式造成的臨時亮度下降
             const settingsToSave = {
-                mode: currentMode,
-                hex: currentHex,
+                mode: currentMode, hex: currentHex,
                 brightness: isEcoMode ? savedBrightness : brightness, 
                 speed: effectSpeedMulti
             };
@@ -620,87 +431,67 @@
             if (savedStr) {
                 try {
                     const settings = JSON.parse(savedStr);
-                    
-                    // 1. 恢復系統變數
                     if (settings.mode) currentMode = settings.mode;
                     if (settings.hex) currentHex = settings.hex;
                     if (settings.brightness !== undefined) brightness = settings.brightness;
                     if (settings.speed) effectSpeedMulti = settings.speed;
 
-                    // 2. 恢復「亮度」介面
                     const bInput = document.getElementById("brightnessInput");
                     bInput.value = brightness;
                     document.getElementById("brightnessVal").innerText = brightness + "%";
                     
-                    // 3. 恢復「律動速度」介面
                     const sInput = document.getElementById("speedInput");
-                    const speedValInt = Math.round(effectSpeedMulti * 100);
-                    sInput.value = speedValInt;
+                    sInput.value = Math.round(effectSpeedMulti * 100);
                     document.getElementById("speedVal").innerText = (effectSpeedMulti == 1.0 ? "標準" : effectSpeedMulti < 1.0 ? "舒緩" : "動感") + " " + effectSpeedMulti + "x";
 
-                    // 4. 恢復「色彩調色盤」介面
                     document.getElementById("rgbInput").value = currentHex;
                     document.querySelectorAll('.preset-dot').forEach(dot => dot.classList.remove('active'));
                     
                     if (currentMode === 'static') {
-                        // 尋找對應顏色的 preset-dot (利用 onclick 屬性字串比對)
-                        let found = false;
                         document.querySelectorAll('.preset-dot').forEach(dot => {
                             if (dot.getAttribute('onclick').toUpperCase().includes(currentHex.toUpperCase())) {
                                 dot.classList.add('active');
-                                found = true;
                             }
                         });
-                        document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
+                        document.querySelectorAll('.effect-card').forEach(c => c.classList.remove('active'));
                     } else {
-                        // 5. 恢復「特效」介面
-                        document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
+                        document.querySelectorAll('.effect-card').forEach(c => c.classList.remove('active'));
                         const activeCard = document.getElementById(`effect-${currentMode}`);
                         if (activeCard) activeCard.classList.add('active');
                     }
-                } catch(e) {
-                    console.error("載入記憶設定失敗", e);
-                }
+                } catch(e) {}
             }
         }
 
+        function vibrate() { if (navigator.vibrate) navigator.vibrate(15); }
+        function vibrateLight() { if (navigator.vibrate) navigator.vibrate([5]); }
 
-        // --- UI Haptic Feedback (觸覺震動回饋) ---
-        function vibrate() {
-            if (navigator.vibrate) navigator.vibrate(15);
-        }
-        function vibrateLight() {
-            if (navigator.vibrate) navigator.vibrate([5]);
-        }
-
-        // --- 狀態監聽 ---
+        // SVG 狀態監聽
         const statusEl = document.getElementById("status");
-        if(statusEl) {
+        const statusIcon = document.getElementById("statusIcon");
+        if(statusEl && statusIcon) {
             const observer = new MutationObserver(function() {
                 const txt = statusEl.innerText;
-                statusEl.className = "status-pill"; 
+                statusIcon.className = "status-icon"; 
                 if (txt.includes("已就緒") || txt.includes("已連線")) {
-                    statusEl.classList.add("status-success");
-                    statusEl.innerText = "CONNECTED";
-                    showToast("已與燈箱連結");
-                } else if (txt.includes("搜尋") || txt.includes("連線中")) {
-                    statusEl.classList.add("status-warning");
-                    statusEl.innerText = "SCANNING";
-                } else if (txt.includes("錯誤") || txt.includes("斷線") || txt.includes("未連線")) {
-                    statusEl.classList.add("status-danger");
-                    statusEl.innerText = "OFFLINE";
+                    statusIcon.classList.add("success");
+                    statusIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4" fill="currentColor" fill-opacity="0.15"></rect><path d="M9 12l2 2 4-4"></path></svg>`;
+                    showToast("已與品牌燈箱建立高速連結");
+                } 
+                else if (txt.includes("搜尋") || txt.includes("連線中")) {
+                    statusIcon.classList.add("warning");
+                    statusIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="12" cy="12" r="3"></circle></svg>`;
+                } 
+                else {
+                    statusIcon.classList.add("danger");
+                    statusIcon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>`;
                 }
             });
             observer.observe(statusEl, { childList: true, characterData: true, subtree: true });
         }
 
-        // --- 模擬器控制與動畫邏輯 ---
         function updateLedSimulator() {
-            if (animationTimer) {
-                clearInterval(animationTimer);
-                animationTimer = null;
-            }
-
+            if (animationTimer) { clearInterval(animationTimer); animationTimer = null; }
             const leds = document.querySelectorAll('.led-dot');
             const acrylic = document.getElementById('acrylicSign');
             const actualBrightness = brightness / 100;
@@ -711,7 +502,7 @@
                     led.style.background = currentHex;
                     led.style.boxShadow = `0 0 15px ${glowColor}, 0 0 5px ${glowColor}`;
                 });
-                acrylic.style.boxShadow = `0 0 35px ${hexToRgba(currentHex, actualBrightness * 0.45)}`;
+                acrylic.style.boxShadow = `0 0 40px ${hexToRgba(currentHex, actualBrightness * 0.45)}`;
             } 
             else if (currentMode === 'fire') {
                 const baseInterval = 120;
@@ -724,10 +515,9 @@
                         const flickerBrightness = actualBrightness * (Math.random() * 0.4 + 0.6);
                         const glowColor = hexToRgba(hex, flickerBrightness);
                         led.style.background = hex;
-                        led.style.boxShadow = `0 0 18px ${glowColor}, 0 0 6px ${glowColor}`;
+                        led.style.boxShadow = `0 0 18px ${glowColor}`;
                     });
-                    const mainGlow = hexToRgba('#FFA500', actualBrightness * 0.35);
-                    acrylic.style.boxShadow = `0 0 35px ${mainGlow}`;
+                    acrylic.style.boxShadow = `0 0 40px ${hexToRgba('#FFA500', actualBrightness * 0.35)}`;
                 }, baseInterval / effectSpeedMulti);
             } 
             else if (currentMode === 'rainbow') {
@@ -736,11 +526,11 @@
                     rainbowHue = (rainbowHue + 1) % 360;
                     leds.forEach((led, idx) => {
                         const h = (rainbowHue + (idx * 25)) % 360;
-                        const color = `hsl(${h}, 80%, ${actualBrightness * 75}%)`; 
+                        const color = `hsl(${h}, 70%, ${actualBrightness * 75}%)`; 
                         led.style.background = color;
                         led.style.boxShadow = `0 0 16px ${color}`;
                     });
-                    acrylic.style.boxShadow = `0 0 35px hsl(${rainbowHue}, 80%, ${actualBrightness * 75}%)`;
+                    acrylic.style.boxShadow = `0 0 40px hsl(${rainbowHue}, 70%, ${actualBrightness * 70}%)`;
                 }, baseInterval / effectSpeedMulti);
             } 
             else if (currentMode === 'flow') {
@@ -752,243 +542,136 @@
                             const color = '#A0E4F1';
                             const glow = hexToRgba(color, actualBrightness);
                             led.style.background = color;
-                            led.style.boxShadow = `0 0 18px ${glow}, 0 0 6px ${glow}`;
+                            led.style.boxShadow = `0 0 18px ${glow}`;
                         } else {
-                            const color = '#3A3935';
-                            led.style.background = color;
-                            led.style.boxShadow = 'none';
+                            led.style.background = '#33322F'; led.style.boxShadow = 'none';
                         }
                     });
-                    acrylic.style.boxShadow = `0 0 25px ${hexToRgba('#A0E4F1', actualBrightness * 0.2)}`;
+                    acrylic.style.boxShadow = `0 0 30px ${hexToRgba('#A0E4F1', actualBrightness * 0.2)}`;
                 }, baseInterval / effectSpeedMulti); 
             }
             else if (currentMode === 'breath') {
-                const baseInterval = 30;
-                let angle = 0;
+                const baseInterval = 30; let angle = 0;
                 animationTimer = setInterval(() => {
                     angle += 0.05 * effectSpeedMulti; 
                     const factor = (Math.sin(angle) + 1) / 2 * 0.8 + 0.2; 
-                    
                     const glowColor = hexToRgba(currentHex, actualBrightness * factor);
                     leds.forEach(led => {
                         led.style.background = currentHex;
-                        led.style.boxShadow = `0 0 15px ${glowColor}, 0 0 5px ${glowColor}`;
+                        led.style.boxShadow = `0 0 15px ${glowColor}`;
                     });
-                    acrylic.style.boxShadow = `0 0 35px ${hexToRgba(currentHex, actualBrightness * factor * 0.45)}`;
+                    acrylic.style.boxShadow = `0 0 40px ${hexToRgba(currentHex, actualBrightness * factor * 0.45)}`;
                 }, baseInterval);
             }
         }
 
-        // --- ECO 智能節能模式 ---
         function toggleEcoMode() {
-            vibrate();
-            isEcoMode = !isEcoMode;
+            vibrate(); isEcoMode = !isEcoMode;
             const ecoBtn = document.getElementById("ecoBtn");
             const brightInput = document.getElementById("brightnessInput");
             
             if (isEcoMode) {
-                savedBrightness = brightness;
-                brightInput.value = 30;
-                updateBrightness(30);
-                brightInput.disabled = true;
-                ecoBtn.classList.add("active");
-                ecoBtn.querySelector("span").innerText = "ECO 節能運作中 (鎖定30%)";
-                
+                savedBrightness = brightness; brightInput.value = 30; updateBrightness(30);
+                brightInput.disabled = true; ecoBtn.classList.add("active");
                 if (typeof sendCmd === 'function') sendCmd('ECO_ON');
-                showToast("已啟動 ECO 節能模式");
+                showToast("智慧節能模式啟動");
             } else {
-                brightInput.disabled = false;
-                brightInput.value = savedBrightness;
-                updateBrightness(savedBrightness);
+                brightInput.disabled = false; brightInput.value = savedBrightness; updateBrightness(savedBrightness);
                 ecoBtn.classList.remove("active");
-                ecoBtn.querySelector("span").innerText = "ECO 智能節能 (鎖定亮度30%)";
-                
                 if (typeof sendCmd === 'function') sendCmd('ECO_OFF');
-                showToast("ECO 已解除");
+                showToast("節能模式已解除");
             }
-            // ECO 模式屬於暫時操作，不寫入持久化記憶中
         }
 
-        // --- 營業定時關閉 (Timer) 邏輯 ---
         function setTimer(minutes) {
             vibrate();
             if (shutdownTimeout) clearTimeout(shutdownTimeout);
             if (countdownInterval) clearInterval(countdownInterval);
 
             const statusEl = document.getElementById('timerStatus');
-
             if (minutes === 0) {
-                statusEl.innerText = '未設定';
-                statusEl.style.color = 'var(--text-secondary)';
+                statusEl.innerText = '未設定'; statusEl.style.color = 'var(--text-secondary)';
                 if (typeof sendCmd === 'function') sendCmd('TIMER_CANCEL');
-                showToast('已取消定時關閉');
-                return;
+                showToast('已取消定時休眠'); return;
             }
 
             let remainingSeconds = minutes * 60;
-            
             const updateText = () => {
-                const m = Math.floor(remainingSeconds / 60);
-                const s = remainingSeconds % 60;
-                statusEl.innerText = `剩餘 ${m}分 ${s.toString().padStart(2, '0')}秒`;
+                statusEl.innerText = `剩餘 ${Math.floor(remainingSeconds / 60)}分 ${(remainingSeconds % 60).toString().padStart(2, '0')}秒`;
                 statusEl.style.color = 'var(--accent-gold)';
             };
             
             updateText();
             countdownInterval = setInterval(() => {
                 remainingSeconds--;
-                if (remainingSeconds <= 0) {
-                    clearInterval(countdownInterval);
-                    executeShutdown();
-                } else {
-                    updateText();
-                }
+                if (remainingSeconds <= 0) { clearInterval(countdownInterval); executeShutdown(); } 
+                else { updateText(); }
             }, 1000);
-
-            shutdownTimeout = setTimeout(() => {
-            }, minutes * 60 * 1000);
 
             if (typeof sendCmd === 'function') sendCmd(`TIMER_${minutes}`);
             showToast(`已設定 ${minutes} 分鐘後自動休眠`);
         }
 
-        // --- 執行關閉 ---
         function executeShutdown() {
             const statusEl = document.getElementById('timerStatus');
-            statusEl.innerText = '已休眠';
-            statusEl.style.color = 'var(--color-danger)';
-            
+            statusEl.innerText = '已休眠'; statusEl.style.color = 'var(--color-danger)';
             if (isEcoMode) toggleEcoMode();
-            
-            const brightInput = document.getElementById("brightnessInput");
-            brightInput.value = 0;
-            updateBrightness(0);
-            
+            document.getElementById("brightnessInput").value = 0; updateBrightness(0);
             stopEffects();
-
-            if (typeof sendCmd === 'function') {
-                sendCmd('POWER_OFF');
-                sendCmd('BRIGHT_0');
-            }
-            showToast('定時結束，燈箱已進入休眠');
-            vibrate();
+            if (typeof sendCmd === 'function') { sendCmd('POWER_OFF'); sendCmd('BRIGHT_0'); }
+            showToast('燈箱已進入休眠'); vibrate();
         }
 
-        // --- 調光器控制 ---
         function updateBrightness(val) {
-            brightness = val;
-            document.getElementById("brightnessVal").innerText = val + "%";
-            updateLedSimulator();
-            saveSettings(); // 儲存記憶
-            
-            if (typeof sendCmd === 'function') {
-                sendCmd(`BRIGHT_${val}`);
-            }
+            brightness = val; document.getElementById("brightnessVal").innerText = val + "%";
+            updateLedSimulator(); saveSettings(); 
+            if (typeof sendCmd === 'function') sendCmd(`BRIGHT_${val}`);
         }
 
-        // --- 動態律動速度控制 ---
         function updateSpeed(val) {
             effectSpeedMulti = (val / 100).toFixed(1);
             document.getElementById("speedVal").innerText = (effectSpeedMulti == 1.0 ? "標準" : effectSpeedMulti < 1.0 ? "舒緩" : "動感") + " " + effectSpeedMulti + "x";
-            
-            updateLedSimulator();
-            saveSettings(); // 儲存記憶
-            
-            if (typeof sendCmd === 'function') {
-                sendCmd(`SPEED_${val}`);
-            }
+            updateLedSimulator(); saveSettings(); 
+            if (typeof sendCmd === 'function') sendCmd(`SPEED_${val}`);
         }
 
-        // --- 色彩切換 ---
         function applyPreset(hex, element) {
-            vibrate();
-            document.querySelectorAll('.preset-dot').forEach(dot => dot.classList.remove('active'));
+            vibrate(); document.querySelectorAll('.preset-dot').forEach(dot => dot.classList.remove('active'));
             if(element) element.classList.add('active');
-            
-            document.getElementById("rgbInput").value = hex;
-            currentHex = hex;
-            currentMode = 'static';
-            
-            document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
-            updateLedSimulator();
-            saveSettings(); // 儲存記憶
-            
+            document.getElementById("rgbInput").value = hex; currentHex = hex; currentMode = 'static';
+            document.querySelectorAll('.effect-card').forEach(c => c.classList.remove('active'));
+            updateLedSimulator(); saveSettings(); 
             if(typeof sendRGB === 'function') sendRGB();
-            showToast(`已套用：${element ? element.title : '品牌原創色'}`);
         }
 
         function applyCustomColor(hex) {
-            document.querySelectorAll('.preset-dot').forEach(dot => dot.classList.remove('active'));
-            currentHex = hex;
-            currentMode = 'static';
-            document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
-            updateLedSimulator();
-            saveSettings(); // 儲存記憶
-            
+            document.querySelectorAll('.preset-dot').forEach(d => d.classList.remove('active'));
+            currentHex = hex; currentMode = 'static';
+            document.querySelectorAll('.effect-card').forEach(c => c.classList.remove('active'));
+            updateLedSimulator(); saveSettings(); 
             if(typeof sendRGB === 'function') sendRGB();
-            showToast("已變更客製化色系");
         }
 
-        // --- 特效切換 ---
         function activateEffect(effectName) {
-            vibrate();
-            document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
+            vibrate(); document.querySelectorAll('.effect-card').forEach(c => c.classList.remove('active'));
             const activeCard = document.getElementById(`effect-${effectName}`);
             if (activeCard) activeCard.classList.add('active');
-
-            currentMode = effectName;
-            updateLedSimulator();
-            saveSettings(); // 儲存記憶
-
-            if (typeof sendCmd === 'function') {
-                if (effectName === 'fire') {
-                    sendCmd('MODE_FIRE');
-                    showToast("已啟動曜暖火焰動態模式");
-                } else if (effectName === 'rainbow') {
-                    sendCmd('MODE_RAINBOW');
-                    showToast("已啟動極光絢彩商用動態模式");
-                } else if (effectName === 'flow') {
-                    sendCmd('MODE_FLOW');
-                    showToast("已啟動水光流螢漸變模式");
-                }
-                else if (effectName === 'breath') {
-                    sendCmd('MODE_BREATH');
-                    showToast("已啟動靜謐呼吸模式");
-                }
-                else if (effectName === 'star') {
-                    sendCmd('MODE_STAR');
-                    showToast("已啟動晨星微爍模式");
-                }
-                else if (effectName === 'meteor') {
-                    sendCmd('MODE_METEOR');
-                    showToast("已啟動香檳流星模式");
-                }
-            } else {
-                showToast(`動態模式變更為: ${effectName}`);
-            }
+            currentMode = effectName; updateLedSimulator(); saveSettings(); 
+            if (typeof sendCmd === 'function') sendCmd(`MODE_${effectName.toUpperCase()}`);
         }
 
         function stopEffects() {
-            document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
-            currentMode = 'static';
-            updateLedSimulator();
-            saveSettings(); // 儲存記憶
-            
+            document.querySelectorAll('.effect-card').forEach(c => c.classList.remove('active'));
+            currentMode = 'static'; updateLedSimulator(); saveSettings(); 
             if (typeof sendCmd === 'function') sendCmd('MODE_STATIC');
             if(typeof sendRGB === 'function') sendRGB();
-            showToast("已切回品牌靜態恆亮光效");
         }
 
-        // --- 輔助函式 ---
         function hexToRgba(hex, alpha) {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
+            const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
             return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
-        function rgbToHex(r, g, b) {
-            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-        }
+        function rgbToHex(r, g, b) { return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1); }
 
         function showToast(message) {
             const toast = document.getElementById("toast");
@@ -997,22 +680,9 @@
             setTimeout(() => { toast.classList.remove("show"); }, 3000);
         }
 
-        // --- 系統初始化 ---
         window.onload = function() {
-            // 1. 優先載入並恢復儲存的狀態
-            loadSettings(); 
-            
-            // 2. 更新模擬器以符合恢復的狀態
-            updateLedSimulator();
-            
-            // 3. 初始化並填滿滑桿漸層 (依照記憶的數值)
-            //updateSliderTrack(document.getElementById("brightnessInput"));
-            //updateSliderTrack(document.getElementById("speedInput"));
-            
-            // 4. 歡迎通知
-            setTimeout(() => {
-                showToast("歡迎使用 Bespoke 燈箱控制系統");
-            }, 600); // 稍微延遲以配合進場動畫
+            loadSettings(); updateLedSimulator();
+            setTimeout(() => { showToast("歡迎使用 Bespoke 燈箱控制系統"); }, 800);
         }
     </script>
 </body>
