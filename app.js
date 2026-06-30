@@ -75,9 +75,9 @@ async function connect() {
 async function sendCmd(cmdStr) {
     if (!commandChar) { 
         if (typeof showToast === 'function') {
-            showToast("請先連接品牌燈箱", "⚠️");
+            showToast("請先連接燈箱", "⚠️");
         } else {
-            console.warn("請先連接品牌燈箱");
+            console.warn("請先連接燈箱");
         }
         return; 
     }
