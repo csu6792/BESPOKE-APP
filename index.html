@@ -241,7 +241,7 @@
         /* 經典韓系網格特效選擇器 */
         .effects-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-top: 10px;
         }
@@ -501,6 +501,13 @@
                     <span class="effect-name">水光流螢</span>
                     <span class="effect-desc">光點柔和律動流水Chasing</span>
                 </div>
+                <div class="effect-card" id="effect-breath" onclick="activateEffect('breath')">
+                    <span class="effect-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
+                    </span>
+                    <span class="effect-name">靜謐呼吸</span>
+                    <span class="effect-desc">隨品牌主色系平滑漸明漸暗</span>
+                </div>
             </div>
 
             <!-- 動態律動節奏滑桿 -->
@@ -650,6 +657,21 @@
                     });
                     acrylic.style.boxShadow = `0 0 25px ${hexToRgba('#A0E4F1', actualBrightness * 0.2)}`;
                 }, baseInterval / effectSpeedMulti); 
+            }
+            else if (currentMode === 'breath') {
+                const baseInterval = 30;
+                let angle = 0;
+                animationTimer = setInterval(() => {
+                    angle += 0.05 * effectSpeedMulti; // 控制呼吸步進速度
+                    const factor = (Math.sin(angle) + 1) / 2 * 0.8 + 0.2; // 介於 0.2 到 1.0 之間
+                    
+                    const glowColor = hexToRgba(currentHex, actualBrightness * factor);
+                    leds.forEach(led => {
+                        led.style.background = currentHex;
+                        led.style.boxShadow = `0 0 15px ${glowColor}, 0 0 5px ${glowColor}`;
+                    });
+                    acrylic.style.boxShadow = `0 0 35px ${hexToRgba(currentHex, actualBrightness * factor * 0.45)}`;
+                }, baseInterval);
             }
         }
 
@@ -825,6 +847,10 @@
                 } else if (effectName === 'flow') {
                     sendCmd('MODE_FLOW');
                     showToast("已啟動水光流螢漸變模式");
+                }
+                else if (effectName === 'breath') {
+                    sendCmd('MODE_BREATH');
+                    showToast("已啟動靜謐呼吸模式");
                 }
             } else {
                 showToast(`動態模式變更為: ${effectName}`);
