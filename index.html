@@ -319,12 +319,12 @@
                     <input type="color" id="rgbInput" value="#FFEAD2" onchange="vibrate(); applyCustomColor(this.value)">
                 </div>
                 <div class="preset-colors">
-                    <div class="preset-dot active" style="--dot-color: #FFEAD2; background: var(--dot-color);" onclick="applyPreset('#FFEAD2', this)"></div>
-                    <div class="preset-dot" style="--dot-color: #FFFDFC; background: var(--dot-color);" onclick="applyPreset('#FFFDFC', this)"></div>
-                    <div class="preset-dot" style="--dot-color: #EBE1D7; background: var(--dot-color);" onclick="applyPreset('#EBE1D7', this)"></div>
-                    <div class="preset-dot" style="--dot-color: #FFD3B6; background: var(--dot-color);" onclick="applyPreset('#FFD3B6', this)"></div>
-                    <div class="preset-dot" style="--dot-color: #A8E6CF; background: var(--dot-color);" onclick="applyPreset('#A8E6CF', this)"></div>
-                    <div class="preset-dot" style="--dot-color: #DCE5E7; background: var(--dot-color);" onclick="applyPreset('#DCE5E7', this)"></div>
+                    <div class="preset-dot active" style="--dot-color: #FFEAD2; background: var(--dot-color);" title="落日暖橘" onclick="applyPreset('#FFEAD2', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #FFFDFC; background: var(--dot-color);" title="極簡石膏冷白" onclick="applyPreset('#FFFDFC', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #EBE1D7; background: var(--dot-color);" title="高雅燕麥杏白" onclick="applyPreset('#EBE1D7', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #FFD3B6; background: var(--dot-color);" title="霓虹暖粉" onclick="applyPreset('#FFD3B6', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #A8E6CF; background: var(--dot-color);" title="薄荷清綠" onclick="applyPreset('#A8E6CF', this)"></div>
+                    <div class="preset-dot" style="--dot-color: #DCE5E7; background: var(--dot-color);" title="清晨天藍" onclick="applyPreset('#DCE5E7', this)"></div>
                 </div>
             </div>
         </div>
@@ -379,6 +379,20 @@
                     </span>
                     <span class="effect-name">香檳流星</span>
                     <span class="effect-desc">拖尾彗星劃過</span>
+                </div>
+				<div class="effect-card" id="effect-prism" onclick="activateEffect('prism')">
+                    <span class="effect-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 22h20L12 2z"/><path d="M12 2v20"/></svg>
+                    </span>
+                    <span class="effect-name">晶透變奏</span>
+                    <span class="effect-desc">七種寶石色隨機同步切換</span>
+                </div>
+                <div class="effect-card" id="effect-ripple" onclick="activateEffect('ripple')">
+                    <span class="effect-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    </span>
+                    <span class="effect-name">波光漣漪</span>
+                    <span class="effect-desc">由中心向兩側水波紋擴散</span>
                 </div>
             </div>
 
@@ -641,6 +655,40 @@
                     acrylic.style.boxShadow = `0 0 40px ${hexToRgba(currentHex, actualBrightness * factor * 0.45)}`;
                 }, baseInterval);
             }
+			else if (currentMode === 'prism') {
+                const baseInterval = 1000;
+                const colors = ['#FF6478', '#FF9632', '#FFDC46', '#64FF96', '#50C8FF', '#3C64FF', '#C864FF'];
+                animationTimer = setInterval(() => {
+                    const randomHex = colors[Math.floor(Math.random() * colors.length)];
+                    const glowColor = hexToRgba(randomHex, actualBrightness);
+                    leds.forEach(led => {
+                        led.style.background = randomHex;
+                        led.style.boxShadow = `0 0 15px ${glowColor}`;
+                    });
+                    acrylic.style.boxShadow = `0 0 40px ${hexToRgba(randomHex, actualBrightness * 0.45)}`;
+                }, baseInterval / effectSpeedMulti);
+            }
+            else if (currentMode === 'ripple') {
+                const baseInterval = 120;
+                let step = 0;
+                animationTimer = setInterval(() => {
+                    leds.forEach(led => {
+                        led.style.background = '#33322F'; led.style.boxShadow = 'none';
+                    });
+                    
+                    const glow = hexToRgba(currentHex, actualBrightness);
+                    if (step === 0) { [3,4].forEach(i => { leds[i].style.background = currentHex; leds[i].style.boxShadow = `0 0 18px ${glow}`; }); }
+                    else if (step === 1) { [2,5].forEach(i => { leds[i].style.background = currentHex; leds[i].style.boxShadow = `0 0 18px ${glow}`; }); }
+                    else if (step === 2) { [1,6].forEach(i => { leds[i].style.background = currentHex; leds[i].style.boxShadow = `0 0 18px ${glow}`; }); }
+                    else if (step === 3) { [0,7].forEach(i => { leds[i].style.background = currentHex; leds[i].style.boxShadow = `0 0 18px ${glow}`; }); }
+                    
+                    step++;
+                    if (step > 6) step = 0;
+                    
+                    // 壓克力版整體呼吸感
+                    acrylic.style.boxShadow = `0 0 30px ${hexToRgba(currentHex, actualBrightness * (step <= 3 ? 0.4 : 0.1))}`;
+                }, baseInterval / effectSpeedMulti); 
+            }
         }
 
         function toggleEcoMode() {
@@ -720,6 +768,7 @@
             document.querySelectorAll('.effect-card').forEach(c => c.classList.remove('active'));
             updateLedSimulator(); saveSettings(); 
             if(typeof sendRGB === 'function') sendRGB();
+			showToast(`已套用：${element ? element.title : '品牌原創色'}`);
         }
 
         function applyCustomColor(hex) {
@@ -731,11 +780,33 @@
         }
 
         function activateEffect(effectName) {
-            vibrate(); document.querySelectorAll('.effect-card').forEach(c => c.classList.remove('active'));
+            vibrate(); 
+            // 1. 切換 UI 卡片狀態
+            document.querySelectorAll('.effect-card').forEach(c => c.classList.remove('active'));
             const activeCard = document.getElementById(`effect-${effectName}`);
             if (activeCard) activeCard.classList.add('active');
-            currentMode = effectName; updateLedSimulator(); saveSettings(); 
+            
+            // 2. 更新系統變數與模擬器
+            currentMode = effectName; 
+            updateLedSimulator(); 
+            saveSettings(); 
+            
+            // 3. 自動將名稱轉大寫並傳送給硬體 (例如 prism -> MODE_PRISM)
             if (typeof sendCmd === 'function') sendCmd(`MODE_${effectName.toUpperCase()}`);
+
+            // 4. 建立高質感的中文翻譯字典，優雅地顯示通知
+            const effectNamesZh = {
+                'fire': '曜暖火焰',
+                'rainbow': '極光絢彩',
+                'flow': '水光流螢',
+                'breath': '靜謐呼吸',
+                'star': '晨星微爍',
+                'meteor': '香檳流星',
+                'prism': '晶透變奏',
+                'ripple': '波光漣漪'
+            };
+            
+            showToast(`已切換至 ${effectNamesZh[effectName] || '動態'} 模式`);
         }
 
         function stopEffects() {
